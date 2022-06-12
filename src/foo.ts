@@ -18,6 +18,7 @@ type State = {
 
     room: Item;
     wall: Item;
+    pocket: Item;
 }
 
 type DiskLocation = 'left stick' | 'middle stick' | 'right stick'
@@ -37,6 +38,8 @@ type ItemProps = {
     readonly parent?: Item
 };
 
+
+
 type Item = {
     name: string; 
     access: 'available' | 'not found' | 'consumed'; 
@@ -47,8 +50,38 @@ type Item = {
     parent: Item | null;
 }
 
+function colorize(st: string, color: string) {
+    const c = {
+        black: 0, 
+        red: 1, 
+        green:2,
+        yellow: 3, 
+        blue: 4,
+        magenta: 5,
+        cyan: 6,
+        white: 7,
+    }[color];
+    return `\u001b[3${c}m${st}\u001b[0m`;
+}
+
 function describeWall(state: State): string {
-    const message = 'You have found a secret.';
+
+    const message = [
+        `                                                                   `,
+        `                                                                   `,
+        `                      _____  _______      _____                    `,
+        `                     /  |  | \\   _  \\    /  |  |                 `,
+        `                    /   |  |_/  /_\\  \\  /   |  |_                `,
+        `                   /    ^   /\\  \\_/   \\/    ^   /               `,
+        `                   \\____   |  \\_____  /\\____   |                `,
+        `                        |__|        \\/      |__|                  `,
+        `                                                                   `,
+        `                  The page you requested doesn't exist.            `,
+        `                                                                   `,
+        `           Or who knows? We have a cool game here. Enjoy!          `,
+        `    If you manage to decipher this message, tag @encse on twitter. `,
+        `                                                                   `,
+    ].join('\n');
 
     let seed = 1;
     const random = () => {
@@ -59,8 +92,14 @@ function describeWall(state: State): string {
     
     let res = '';
     for (let ch of message) {
-        const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()]
-        res += disk.location === 'middle stick' ? ch : ' ';
+        const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()];
+        if (ch === '\n') {
+            res += '\n';
+        } else if (disk.location === 'middle stick') {
+            res += colorize(ch, disk.color)
+        } else {
+            res += ' ';
+        }
     } 
     return res;
 }
@@ -127,11 +166,21 @@ function step(st: string, state: State): Result {
     let verb = st.trim().split(' ')[0];
     let obj = st.trim().split(' ').slice(1).join(' ');
 
+    if (verb === 'l') {  verb = 'look'; }
+    if (verb === 'h') {  verb = 'help'; }
+    if (verb === 'i') {  verb = 'inventory'; }
+    if (verb === 'inv') {  verb = 'inventory'; }
+    if (verb === 'e') {  verb = 'examine'; }
+    if (verb === 'u') {  verb = 'use'; }
+    if (verb === 'm') {  verb = 'move'; }
+
     switch (verb) {
         case 'hello':
             return "- Hello!\n...\nNo answer. Not sure if this is a bad thing though.";
         case 'lumos': 
             return lumos(state);
+        case 'inventory': 
+            return step('examine pocket', state);
         case 'help':
             return "Look around, examine things and try to use them.";
         case 'look':
@@ -198,9 +247,9 @@ function step(st: string, state: State): Result {
                             disk === state.mediumDisk ? {mediumDisk: {...state.mediumDisk, location: fullName(toStick) as DiskLocation}} :
                                                         {largeDisk: {...state.largeDisk, location: fullName(toStick) as DiskLocation}};
 
-                        const stMove = `You carefully lift the disk and place it on ${fullName(toStick)}.`;
+                        const stMove = `You carefully lift the disk and place it on the ${fullName(toStick)}.`;
                         const stAction =
-                            fromStick === state.middleStick ? `As soon as You lift the disk, it stops glowing.` :
+                            fromStick === state.middleStick ? `As soon as you lift the disk, it stops glowing.` :
                             toStick === state.middleStick ? `The disk starts glowing in ${disk.color} illuminating the room.` :
                             '';
 
@@ -234,7 +283,7 @@ export function main(element: HTMLElement) {
             if (color(state) !== 'black') {
                 stRoom = `The room is lit by ${color(state)} colors. `;
                 stInstallation = `There is ${state.installation.name} in the center. `;
-                stWall = `There is some message on the wall.`
+                stWall = `There is some message on the wall. `
             } else {
                 stRoom =
                     "You go down to all fours and start groping around the room. " +
@@ -318,13 +367,13 @@ export function main(element: HTMLElement) {
     });
 
     const leftStick = makeItem({
-        name: ['stick', 'left stick'],
+        name: ['stick', 'sticks', 'left stick'],
         access: 'not found',
         examine: () => `It's made of wood, about two spans long.`
     });
 
     const middleStick = makeItem({
-        name: ['stick', 'middle stick'],
+        name: ['stick', 'sticks', 'sticks','middle stick'],
         access: 'not found',
         examine: () => `It's made of wood, about two spans long.`
     });
@@ -332,7 +381,7 @@ export function main(element: HTMLElement) {
     const missingStick ={
         used: false, 
         ...makeItem({
-            name: ['stick', 'stick from the floor'],
+            name: ['stick', 'sticks', 'stick from the floor'],
             access: 'not found',
             examine: () => {
                 if (state.missingStick.used) {
@@ -366,7 +415,7 @@ export function main(element: HTMLElement) {
             color: color,
             ...makeItem({
                 access: 'not found',
-                name: ['disk', fullName],
+                name: ['disk', 'disks', fullName],
                 examine: (state) => {
                     const self = getItemsByName(state, fullName)[0] as Disk;
                     if (self == null) {
@@ -394,7 +443,24 @@ export function main(element: HTMLElement) {
             }
             return `Somebody painted a message on the wall. It says:` + describeWall(state);
         }
-    })
+    });
+
+    const pocket = makeItem({
+        name: 'pocket', 
+        examine: (state) => {
+            let st = ``;
+            if (state.matches.access === 'available') {
+                st += `You have a box of matches.`;
+            } 
+
+            if (state.missingStick.access === 'available' && !state.missingStick.used) {
+                st += `You have a stick.`;
+            }
+
+            return st;
+        }
+    });
+
     let state: State = {
         installation,
         hole,
@@ -408,6 +474,7 @@ export function main(element: HTMLElement) {
         mediumDisk,
         largeDisk,
         wall,
+        pocket,
     };
 
     let term = new Terminal();
@@ -519,7 +586,7 @@ function hanoi(state: State): string {
     draw(stMediumDisk, colByStick[state.mediumDisk.location], rowByStick[state.mediumDisk.location]--);
     draw(stSmallDisk, colByStick[state.smallDisk.location], rowByStick[state.smallDisk.location]--);
 
-    return '\n' + res.map(line => line.join('')).join('\n')
+    return '\n\n' + res.map(line => '  ' +  line.join('')).join('\n')
 }
 
 function allowedPositions(disk: Disk, state: State):  Item[] {
@@ -554,54 +621,3 @@ function diskUsage(disk: Disk, state: State): string {
         return `You can move it to ${targetItems.slice(0, targetItems.length - 1).join(', ')} or ${targetItems[targetItems.length - 1]}`;
     }
 }
-
-
-
-// function step(st: string, state: State): [string | string[], Partial<State>] {
-
-//         switch (verb) {
-//             case 'look':
-//             case 'examine':
-//                 switch (obj) {
-//                     case 'wall':
-//                         if (color(state) == 'black') {
-//                             return [`It's a wall.`, {}];
-//                         } else {
-//                             return [describeWall(state), {}];
-//                         }
-
-//                     case 'pocket': {
-//                         const stMatches =
-//                             state.matches == 'has' ? 'I have a box of matches.' :
-//                                 state.matches == 'used' ? 'I have an empty box of matches.' :
-//                                     assertNever(state.matches);
-
-//                         const stStick =
-//                             state.stick == 'has' ? 'I have a wooden stick.' :
-//                                 state.stick == 'used' ? '' :
-//                                     state.stick == 'not found' ? '' :
-//                                         assertNever(state.stick);
-
-//                         return [[stMatches, stStick], state];
-//                     }
-//                 }
-//                 break;
-//             case 'move':
-//                 break;
-//             case 'use':
-//                 switch (obj) {
-//                     case 'wall':
-//                         return ["It's of no use.", {}];
-//                         return step('examine pocket', state);
-//                     default:
-//                         assertNever(obj);
-//                 }
-//                 break;
-//             default:
-//                 assertNever(verb);
-//         }
-//     } catch (e) {
-//         // console.error(e);
-//     }
-
-// }
