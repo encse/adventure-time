@@ -211,8 +211,10 @@ function step(st: string, state: State): Result {
                 }
             }
         case 'move': {
-            if (obj.indexOf(' to ') < 0) {
-                return 'Try "move small disk to middle stick".';
+            if (getItemsByName(state, 'disk').length === 0) {
+                return `You have nothing to move.`;
+            } else if (obj.indexOf(' to ') < 0) {
+                return 'Try "move <some> disk to <some> stick".';
             } else {
                 const parts = obj.split(' to ');
                 const what = parts[0].trim();
@@ -222,7 +224,7 @@ function step(st: string, state: State): Result {
                 const objBs = getItemsByName(state, where);
 
                 if (objAs.length === 0 || objBs.length === 0) {
-                    return `That doesn't work. Try "move small disk to middle stick".`
+                    return `Try "move <some> disk to <some> stick".`
                 } else if (objAs.length > 1) {
                     return disambiguate(objAs);
                 } else if (objBs.length > 1) {
@@ -232,7 +234,7 @@ function step(st: string, state: State): Result {
                     const toStick = objBs[0];
 
                     if (disk.name !== 'disk') {
-                        return `That doesn't work. Try "move small disk to middle stick".`
+                        return `Try "move <some> disk to <some> stick".`
                     } 
 
                     if (toStick.name !== 'stick') {
