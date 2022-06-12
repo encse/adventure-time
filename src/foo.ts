@@ -125,7 +125,7 @@ function makeItem(props: ItemProps) : Item {
         props.examine == null ? () => `It's just ${a(name)}` :
         typeof(props.examine) == 'string' ? () => props.examine as string :
         props.examine;
-    console.log(name, props.look);
+
     const look = 
         props.look == null ? (state: State) => {
             if (color(state) === 'black') { 
