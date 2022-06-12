@@ -212,7 +212,7 @@ function step(st: string, state: State): Result {
             }
         case 'move': {
             if (obj.indexOf(' to ') < 0) {
-                return 'Try "move X to Y".';
+                return 'Try "move small disk to middle stick".';
             } else {
                 const parts = obj.split(' to ');
                 const what = parts[0].trim();
@@ -222,7 +222,7 @@ function step(st: string, state: State): Result {
                 const objBs = getItemsByName(state, where);
 
                 if (objAs.length === 0 || objBs.length === 0) {
-                    return `That doesn't work.`
+                    return `That doesn't work. Try "move small disk to middle stick".`
                 } else if (objAs.length > 1) {
                     return disambiguate(objAs);
                 } else if (objBs.length > 1) {
@@ -232,7 +232,7 @@ function step(st: string, state: State): Result {
                     const toStick = objBs[0];
 
                     if (disk.name !== 'disk') {
-                        return `That doesn't work.`
+                        return `That doesn't work. Try "move small disk to middle stick".`
                     } 
 
                     if (toStick.name !== 'stick') {
