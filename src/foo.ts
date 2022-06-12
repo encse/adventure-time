@@ -214,17 +214,22 @@ function step(st: string, state: State): Result {
             if (getItemsByName(state, 'disk').length === 0) {
                 return `You have nothing to move.`;
             } else if (obj.indexOf(' to ') < 0) {
-                return 'Try "move <some> disk to <some> stick".';
+                return 'Try "move <some> disk to <position>".';
             } else {
                 const parts = obj.split(' to ');
                 const what = parts[0].trim();
-                const where = parts[1].trim();
+                let where = parts[1].trim();
+
+                if (where === 'left') {where = 'left stick';}
+                if (where === 'right') {where = 'right stick';}
+                if (where === 'center') {where = 'center stick';}
+                if (where === 'middle') {where = 'center stick';}
                
                 const objAs = getItemsByName(state, what);
                 const objBs = getItemsByName(state, where);
 
                 if (objAs.length === 0 || objBs.length === 0) {
-                    return `Try "move <some> disk to <some> stick".`
+                    return `Try "move <some> disk to <position>".`
                 } else if (objAs.length > 1) {
                     return disambiguate(objAs);
                 } else if (objBs.length > 1) {
@@ -234,7 +239,7 @@ function step(st: string, state: State): Result {
                     const toStick = objBs[0];
 
                     if (disk.name !== 'disk') {
-                        return `Try "move <some> disk to <some> stick".`
+                        return `Try "move <some> disk to <position>".`
                     } 
 
                     if (toStick.name !== 'stick') {
@@ -379,7 +384,7 @@ export function main(element: HTMLElement) {
     });
 
     const centerStick = makeItem({
-        name: ['stick', 'sticks', 'sticks','center stick'],
+        name: ['stick', 'sticks', 'sticks', 'middle stick', 'center stick'],
         access: 'not found',
         examine: () => `It's made of wood, about two spans long.`
     });
