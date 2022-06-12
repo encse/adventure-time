@@ -8,22 +8,20 @@ type State = {
     installation: Item;
     hole: Item;
 
-    sticks: Item;
     leftStick: Item;
     middleStick: Item;
-    rightStick: Item;
+    missingStick: Item & {used: boolean};
 
-    missingStick: Item;
-
-    disks: Item;
     smallDisk: Disk;
     mediumDisk: Disk;
     largeDisk: Disk;
 
     room: Item;
+    wall: Item;
 }
 
-type Disk = Item & {stick: 'leftStick' | 'middleStick' | 'rightStick'};
+type DiskLocation = 'left stick' | 'middle stick' | 'right stick'
+type Disk = Item & {location: DiskLocation, color: string};
 type Result = string | [string | string[], Partial<State>];
 
 function a(st: string) {
@@ -49,13 +47,37 @@ type Item = {
     parent: Item | null;
 }
 
-function getItemByName(state: State, name: string): Item | null {
-    for (let item of Object.values(state)){
-        if (item.access === 'available' && item.alias.includes(name)){
-            return item;
-        }
+function describeWall(state: State): string {
+    const message = 'You have found a secret.';
+
+    let seed = 1;
+    const random = () => {
+        let x = Math.sin(seed++) * 10000;
+        x =  x - Math.floor(x);
+        return Math.floor(x * 3);
     }
-    return null;
+    
+    let res = '';
+    for (let ch of message) {
+        const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()]
+        res += disk.location === 'middle stick' ? ch : ' ';
+    } 
+    return res;
+}
+
+
+function fullName(item: Item) {
+    return item.alias[item.alias.length - 1];
+}
+
+function disambiguate(items: Item[]) {
+    let msg = `Which one do you want?\n`;
+    let list = items.map(item => `- ` + item.alias[item.alias.length - 1]).join('\n');
+    return msg + list + '\n';
+}
+
+function getItemsByName(state: State, name: string): Item[] {
+    return Object.values(state).filter(item => item.access === 'available' && item.alias.includes(name));
 }
 
 function makeItem(props: ItemProps) : Item {
@@ -90,11 +112,11 @@ function makeItem(props: ItemProps) : Item {
 function lumos(state: State) : string {
     if (color(state) !== 'black') {
         return `There is enough light here.`
-    } else if (state.missingStick.access === 'available') {
+    } else if (state.missingStick.access === 'available' && !state.missingStick.used) {
         return (
             `You start swinging the stick drawing magic runes in the air.\n`+
             `- Lumos! - You shout in the darkness.\n` +
-            `Nothing happens. Magic have left this place a long time ago.`
+            `Nothing happens. Magic left this place long time ago.`
         )
     } else {
         return "You don't have a magic wand."
@@ -107,7 +129,7 @@ function step(st: string, state: State): Result {
 
     switch (verb) {
         case 'hello':
-            return "- Hello! ... no answer";
+            return "- Hello!\n...\nNo answer. Not sure if this is a bad thing though.";
         case 'lumos': 
             return lumos(state);
         case 'help':
@@ -117,27 +139,82 @@ function step(st: string, state: State): Result {
             if (obj === '') {
                 return state.room[verb](state);
             } else {
-                const item = getItemByName(state, obj);
-                if (item != null) {
-                    return item[verb](state)
-                }
-            }
-            break;
-        case 'use':
-            if (obj === '') {
-                return `What do you want to use?`;
-            } else {
-                const item = getItemByName(state, obj);
-                if (item != null) {
-                    return item.use(state);
+                const items = getItemsByName(state, obj);
+                if (items.length === 1) {
+                    return items[0][verb](state)
+                } else if (items.length > 1) {
+                    return disambiguate(items);
                 } else {
                     return `You don't have it.`;
                 }
             }
+        case 'use':
+            if (obj === '') {
+                return `What do you want to use?`;
+            } else {
+                const items = getItemsByName(state, obj);
+                if (items.length === 1 ) {
+                    return items[0].use(state);
+                } else if (items.length > 1){
+                    return disambiguate(items);
+                } else {
+                    return `You don't have it.`;
+                }
+            }
+        case 'move': {
+            if (obj.indexOf(' to ') < 0) {
+                return 'Try "move X to Y".';
+            } else {
+                const parts = obj.split(' to ');
+                const what = parts[0].trim();
+                const where = parts[1].trim();
+               
+                const objAs = getItemsByName(state, what);
+                const objBs = getItemsByName(state, where);
+
+                if (objAs.length === 0 || objBs.length === 0) {
+                    return `That doesn't work.`
+                } else if (objAs.length > 1) {
+                    return disambiguate(objAs);
+                } else if (objBs.length > 1) {
+                    return disambiguate(objBs);
+                } else {
+                    const disk = objAs[0] as Disk;
+                    const toStick = objBs[0];
+
+                    if (disk.name !== 'disk') {
+                        return `That doesn't work.`
+                    } 
+
+                    if (toStick.name !== 'stick') {
+                        return diskUsage(disk, state);
+                    }
+
+                    const fromStick = getItemsByName(state, disk.location)[0];
+                    
+                    if (allowedPositions(disk, state).includes(toStick)) {
+                        const upd: Partial<State> = 
+                            disk === state.smallDisk ?  {smallDisk: {...state.smallDisk, location: fullName(toStick) as DiskLocation}} :
+                            disk === state.mediumDisk ? {mediumDisk: {...state.mediumDisk, location: fullName(toStick) as DiskLocation}} :
+                                                        {largeDisk: {...state.largeDisk, location: fullName(toStick) as DiskLocation}};
+
+                        const stMove = `You carefully lift the disk and place it on ${fullName(toStick)}.`;
+                        const stAction =
+                            fromStick === state.middleStick ? `As soon as You lift the disk, it stops glowing.` :
+                            toStick === state.middleStick ? `The disk starts glowing in ${disk.color} illuminating the room.` :
+                            '';
+
+                        state = {...state, ...upd};
+                        return [[stMove, stAction, hanoi(state)], state];
+                    }  else {
+                        return `That doesn't work. ` +  diskUsage(disk, state);
+                    }
+                }
+            }
+        }
     }
     return "I don't understand.";
 }
-
 
 export function main(element: HTMLElement) {
     const room = makeItem({
@@ -149,7 +226,7 @@ export function main(element: HTMLElement) {
         examine: (state: State): Result =>  {
             let stRoom = '';
             let stInstallation = '';
-            // let stWall = '';
+            let stWall = '';
             let stStick = '';
 
             let upd: Partial<State> = {};
@@ -157,7 +234,7 @@ export function main(element: HTMLElement) {
             if (color(state) !== 'black') {
                 stRoom = `The room is lit by ${color(state)} colors. `;
                 stInstallation = `There is ${state.installation.name} in the center. `;
-                // stWall = describeWall(state)
+                stWall = `There is some message on the wall.`
             } else {
                 stRoom =
                     "You go down to all fours and start groping around the room. " +
@@ -169,7 +246,7 @@ export function main(element: HTMLElement) {
                 upd = {missingStick: {...state.missingStick, access: 'available'}}
             }
 
-            const msg = stRoom + stInstallation + stStick
+            const msg = stRoom + stInstallation + stWall + stStick;
             return [msg, upd];
         }
     });
@@ -216,21 +293,19 @@ export function main(element: HTMLElement) {
         access: 'not found',
         examine: (state: State): Result => {
 
-            const msg = state.rightStick.access === 'available' ?
-                `It's a tower of Hanoi game with three disks.` :
-                `The installation consists of three disks on two sticks. There is a hole for a third stick to the right.`;
+            const msg = state.missingStick.used ?
+                `It's a tower of Hanoi game with a small, a medium and a large disk.` :
+                `The installation consists of a small, a medium and a large disk on two sticks. There is a hole for a third stick to the right.`;
 
             const upd: Partial<State> = {
-                hole:        {...hole, access: 'available'},
+                hole:        {...state.hole, access: 'available'},
 
-                sticks:      {...sticks,  access: 'available'},
-                leftStick:   {...leftStick,  access: 'available'},
-                middleStick: {...middleStick,  access: 'available'},
+                leftStick:   {...state.leftStick,  access: 'available'},
+                middleStick: {...state.middleStick,  access: 'available'},
                 
-                disks:       {...disks,  access: 'available'},
-                smallDisk:   {...smallDisk,  access: 'available'},
-                mediumDisk:  {...mediumDisk,  access: 'available'},
-                largeDisk:   {...largeDisk,  access: 'available'},
+                smallDisk:   {...state.smallDisk,  access: 'available'},
+                mediumDisk:  {...state.mediumDisk,  access: 'available'},
+                largeDisk:   {...state.largeDisk,  access: 'available'},
             };
             return [msg + hanoi(state), upd];
         }
@@ -239,110 +314,100 @@ export function main(element: HTMLElement) {
     const hole =  makeItem({
         name: 'hole',
         access: 'not found',
-        examine: () => `It's a small hole in the table. Perfect for a third stick.`
+        examine: () => `A third stick would fit perfectly there.`
     });
 
     const leftStick = makeItem({
-        name: 'left stick',
+        name: ['stick', 'left stick'],
         access: 'not found',
         examine: () => `It's made of wood, about two spans long.`
     });
 
     const middleStick = makeItem({
-        name: 'middle stick',
+        name: ['stick', 'middle stick'],
         access: 'not found',
         examine: () => `It's made of wood, about two spans long.`
     });
 
-    const rightStick = makeItem({
-        name: 'right stick',
-        access: 'not found',
-        examine: () => `It's made of wood, about two spans long.`
-    });
-
-    const missingStick = makeItem({
-        name: 'stick',
-        access: 'not found',
-        examine: () => {
-            if (state.hole.access === 'available') {
-                return `The stick would fit into the hole in the installation.`
-            } else {
-                return `It's made of wood, about two spans long.`;
+    const missingStick ={
+        used: false, 
+        ...makeItem({
+            name: ['stick', 'stick from the floor'],
+            access: 'not found',
+            examine: () => {
+                if (state.missingStick.used) {
+                    return `The stick is stuck.`;
+                } else if (state.hole.access === 'available') {
+                    return `The stick would fit into the hole in the installation.`
+                } else {
+                    return `It's made of wood, about two spans long.`;
+                }
+            },
+            use: (state) => {
+                if (state.missingStick.used) {
+                    return `The stick is stuck.`;
+                } else if (state.hole.access === 'available') {
+                    const msg = `You insert the stick to the hole in the installation. It's starting to make sense now.`;
+                    const upd: Partial<State> = {
+                        missingStick: {...state.missingStick, alias: ['stick', 'right stick'], used: true}
+                    } 
+                    return [msg, upd];
+                } else {
+                    return lumos(state);
+                }
             }
-        },
-        use: (state) => {
-            if (state.hole.access === 'available') {
-                const msg = `You insert the stick to the hole in the installation. It's starting to make sense now.`;
-                const upd: Partial<State> = {
-                    missingStick: {...state.missingStick, access: 'consumed' },
-                    rightStick: {...state.rightStick, access: 'available' }
-                } 
-                return [msg, upd];
-            } else {
-                return lumos(state);
-            }
-        }
-    });
+        })
+    };
 
-    const sticks = makeItem({
-        name: 'sticks',
-        access: 'not found',
+    const makeDisk = (shortName: string, color: string): Disk => {
+        const fullName = shortName +' disk'
+        return {
+            location: 'left stick',
+            color: color,
+            ...makeItem({
+                access: 'not found',
+                name: ['disk', fullName],
+                examine: (state) => {
+                    const self = getItemsByName(state, fullName)[0] as Disk;
+                    if (self == null) {
+                        return `You don't have it.`;
+                    } else if (self.location === 'middle stick') {
+                        return `It's made of glass and glowing in ${self.color}, illuminating the room.`;
+                    } else {
+                        return `It's made of glass.`;
+                    }
+                },
+                use: () => `You can try to move it to an other stick.`
+            })
+        };
+    }
+    const smallDisk = makeDisk('small', 'red');
+    const mediumDisk = makeDisk('medium', 'green');
+    const largeDisk = makeDisk('large', 'blue');
+
+    const wall = makeItem({
+        name: 'wall', 
         examine: (state) => {
-            if (state.rightStick.access === 'available') {
-                return `There is a ${state.leftStick.name} a ${state.middleStick.name} and a ${state.rightStick.name}.`
-            } else {
-                return `There is a ${state.leftStick.name} a ${state.middleStick.name}.`
+
+            if (color(state) === 'black') {
+                return `It's a wall, made of concrete.`;
             }
+            return `Somebody painted a message on the wall. It says:` + describeWall(state);
         }
-    });
-
-    const smallDisk:Disk = {
-        stick: 'leftStick',
-        ...makeItem({
-            access: 'not found',
-            name: 'small disk',
-        })
-    };
-
-    const mediumDisk:Disk = {
-        stick: 'leftStick',
-        ...makeItem({
-            access: 'not found',
-            name: 'medium disk',
-        })
-    };
-
-    const largeDisk:Disk = {
-        stick: 'leftStick',
-        ...makeItem({
-            access: 'not found',
-            name: 'large disk',
-        })
-    };
-
-    const disks = makeItem({
-        name: 'disks',
-        access: 'not found',
-        examine: (state) => {
-            return `There is a ${state.smallDisk.name}, a ${state.mediumDisk.name} and a ${state.largeDisk.name}.`
-        }
-    });
-
+    })
     let state: State = {
         installation,
         hole,
         leftStick,
         middleStick,
-        rightStick,
-        missingStick: missingStick,
-        sticks,
-        matches: matches,
-        darkness: darkness,
-        room: room,
+        missingStick,
+        matches,
+        darkness,
+        room,
         smallDisk,
         mediumDisk,
         largeDisk,
-        disks,
+        wall,
     };
 
     let term = new Terminal();
@@ -388,69 +453,24 @@ export function main(element: HTMLElement) {
       });
 }
 
-// function assertNever(n: never): never {
-//     throw new Error(n)
-// }
-
 function color(state: State): string {
-    return 'black';
-    // const r = getStickPosition('small-disk', state) == 'stick-2';
-    // const g = getStickPosition('medium-disk', state) == 'stick-2';
-    // const b = getStickPosition('large-disk', state) == 'stick-2';
+    const r = state.smallDisk.location === 'middle stick';
+    const g = state.mediumDisk.location === 'middle stick';
+    const b = state.largeDisk.location === 'middle stick';
 
-    // if (r && g && b) { return "white" }
-    // else if (r && g && !b) { return "yellow"; }
-    // else if (r && !g && b) { return "purple"; }
-    // else if (r && !g && !b) { return "red"; }
-    // else if (!r && g && b) { return "cyan"; }
-    // else if (!r && g && !b) { return "green"; }
-    // else if (!r && !g && b) { return "blue"; }
-    // else if (!r && !g && !b) { return "black"; }
-    // else {
-    //     throw new Error();
-    // }
+    if (r && g && b) { return "white" }
+    else if (r && g && !b) { return "yellow"; }
+    else if (r && !g && b) { return "purple"; }
+    else if (r && !g && !b) { return "red"; }
+    else if (!r && g && b) { return "cyan"; }
+    else if (!r && g && !b) { return "green"; }
+    else if (!r && !g && b) { return "blue"; }
+    else if (!r && !g && !b) { return "black"; }
+    else {
+        throw new Error();
+    }
 }
 
-
-
-// function describeWall(state: State): string {
-//     if (color(state) == 'black') {
-//         return '';
-//     }
-
-//     let st = state.smallDisk == 'stick-2' ? '4' : '.';
-//     st += state.mediumDisk == 'stick-2' ? '0' : '.';
-//     st += state.largeDisk == 'stick-2' ? '4' : '.';
-
-//     return `Somebody painted ${st} on the wall.`
-// }
-
-// function diskColor(diskName: DiskName): string {
-//     return (
-//         diskName == 'large-disk' ? 'blue' :
-//             diskName == 'medium-disk' ? 'green' :
-//                 diskName == 'small-disk' ? 'red' :
-//                     assertNever(diskName)
-//     );
-// }
-
-// function getStickPosition(diskName: DiskName, state: State) {
-//     return (
-//         diskName == 'large-disk' ? state.largeDisk :
-//             diskName == 'medium-disk' ? state.mediumDisk :
-//                 diskName == 'small-disk' ? state.smallDisk :
-//                     assertNever(diskName)
-//     );
-// }
-
-// function setStickPosition(diskName: DiskName, stick: StickName): Partial<State> {
-//     return (
-//         diskName == 'large-disk' ? { largeDisk: stick } :
-//             diskName == 'medium-disk' ? { mediumDisk: stick } :
-//                 diskName == 'small-disk' ? { smallDisk: stick } :
-//                     assertNever(diskName)
-//     );
-// }
 
 function hanoi(state: State): string {
     let res = [
@@ -467,15 +487,15 @@ function hanoi(state: State): string {
     const stLargeDisk = '[*******]';
 
     const rowByStick = {
-        'leftStick': 3,
-        'middleStick': 3,
-        'rightStick': 3
+        'left stick': 3,
+        'middle stick': 3,
+        'right stick': 3
     }
 
     const colByStick = {
-        'leftStick': 2,
-        'middleStick': 11,
-        'rightStick': 21
+        'left stick': 2,
+        'middle stick': 11,
+        'right stick': 21
     }
 
     const draw = (st: string, col: number, row: number) => {
@@ -488,50 +508,52 @@ function hanoi(state: State): string {
 
     for (let row = 0; row < res.length - 1; row++) {
         for (let col of Object.values(colByStick)) {
-            if (state.rightStick.access !== 'available' && col === colByStick['rightStick']) {
+            if (!state.missingStick.used && col === colByStick['right stick']) {
                 continue;
             }
             draw(empty, col, row);
         }
     }
 
-    draw(stLargeDisk, colByStick[state.largeDisk.stick], rowByStick[state.largeDisk.stick]--);
-    draw(stMediumDisk, colByStick[state.mediumDisk.stick], rowByStick[state.mediumDisk.stick]--);
-    draw(stSmallDisk, colByStick[state.smallDisk.stick], rowByStick[state.smallDisk.stick]--);
+    draw(stLargeDisk, colByStick[state.largeDisk.location], rowByStick[state.largeDisk.location]--);
+    draw(stMediumDisk, colByStick[state.mediumDisk.location], rowByStick[state.mediumDisk.location]--);
+    draw(stSmallDisk, colByStick[state.smallDisk.location], rowByStick[state.smallDisk.location]--);
 
     return '\n' + res.map(line => line.join('')).join('\n')
 }
 
-// function allowedPositions(diskName: DiskName, state: State): StickName[] {
-//     let targetLocations: StickName[] = state.stick == 'used' ? ['stick-1', 'stick-2', 'stick-3'] : ['stick-1', 'stick-2'];
+function allowedPositions(disk: Disk, state: State):  Item[] {
+    let targetLocations: string[] = state.missingStick.used ? 
+        ['left stick', 'middle stick', 'right stick'] : 
+        ['left stick', 'middle stick'];
 
-//     if (diskName == 'small-disk') {
-//         targetLocations = targetLocations.filter(x => x != state.smallDisk);
-//     } else if (diskName == 'medium-disk' && state.smallDisk == state.mediumDisk) {
-//         targetLocations = [];
-//     } else if (diskName == 'medium-disk') {
-//         targetLocations = targetLocations.filter(x => x != state.smallDisk && x != state.mediumDisk);
-//     } else if (diskName == 'large-disk' && state.largeDisk == state.mediumDisk) {
-//         targetLocations = [];
-//     } else if (diskName == 'large-disk' && state.largeDisk == state.smallDisk) {
-//         targetLocations = [];
-//     } else if (diskName == 'large-disk') {
-//         targetLocations = targetLocations.filter(x => x != state.smallDisk && x != state.mediumDisk && x != state.largeDisk);
-//     }
+    if (disk === state.smallDisk) {
+        targetLocations = targetLocations.filter(x => x !== state.smallDisk.location);
+    } else if (disk === state.mediumDisk && state.smallDisk.location === state.mediumDisk.location) {
+        targetLocations = [];
+    } else if (disk === state.mediumDisk) {
+        targetLocations = targetLocations.filter(x => x !== state.smallDisk.location && x !== state.mediumDisk.location);
+    } else if (disk === state.largeDisk && state.largeDisk.location === state.mediumDisk.location) {
+        targetLocations = [];
+    } else if (disk === state.largeDisk && state.largeDisk.location === state.smallDisk.location) {
+        targetLocations = [];
+    } else if (disk === state.largeDisk) {
+        targetLocations = targetLocations.filter(x => x !== state.smallDisk.location && x !== state.mediumDisk.location && x !== state.largeDisk.location);
+    }
 
-//     return targetLocations
-// }
+    return targetLocations.map(location => getItemsByName(state, location)[0]);
+}
 
-// function diskUsage(diskName: DiskName, state: State): string {
-//     const targetLocations = allowedPositions(diskName, state)
-//     if (targetLocations.length == 0) {
-//         return 'I cannot move it.';
-//     } else if (targetLocations.length == 1) {
-//         return `I can move it to ${targetLocations[0]}`;
-//     } else {
-//         return `I can move it to ${targetLocations.slice(0, targetLocations.length - 1).join(', ')} or ${targetLocations[targetLocations.length - 1]}`;
-//     }
-// }
+function diskUsage(disk: Disk, state: State): string {
+    const targetItems = allowedPositions(disk, state).map(item => fullName(item));
+    if (targetItems.length === 0) {
+        return 'You cannot move it.';
+    } else if (targetItems.length === 1) {
+        return `You can move it to ${targetItems[0]}`;
+    } else {
+        return `You can move it to ${targetItems.slice(0, targetItems.length - 1).join(', ')} or ${targetItems[targetItems.length - 1]}`;
+    }
+}
 
 
 
@@ -547,33 +569,7 @@ function hanoi(state: State): string {
 //                         } else {
 //                             return [describeWall(state), {}];
 //                         }
-//                     case 'disk':
-//                     case 'disks':
-//                         return ["There is a small disk, a medium disk and a large disk.", {}];
-//                     case 'small-disk':
-//                     case 'medium-disk':
-//                     case 'large-disk':
-//                         if (getStickPosition(obj, state) == 'stick-2') {
-//                             return [`The disk glows in ${diskColor(obj)}.`, {}];
-//                         } else {
-//                             return [`It's a glass disk.`, {}]
-//                         }
 
-//                     case 'stick':
-//                         switch (state.stick) {
-//                             case 'not found': throw new Error();
-//                             case 'has': return ["It's a wooden stick, about two spans long.", state];
-//                             case 'used': return ["The stick is the missing part of a tower of Hanoi game in the middle of the room.", state];
-//                             default: assertNever(state.stick);
-//                         }
-//                         break;
-//                     case 'matches':
-//                         switch (state.matches) {
-//                             case 'has': return ["The box is almost empty, I have just a single match left.", state];
-//                             case 'used': return ["The box is empty.", state];
-//                             default: assertNever(state.matches);
-//                         }
-//                         break;
 //                     case 'pocket': {
 //                         const stMatches =
 //                             state.matches == 'has' ? 'I have a box of matches.' :
@@ -588,117 +584,15 @@ function hanoi(state: State): string {
 
 //                         return [[stMatches, stStick], state];
 //                     }
-//                     case 'room': {
-//                         let stRoom = '';
-//                         let stInstallation = '';
-//                         let stWall = '';
-//                         let stStick = '';
-
-//                         if (color(state) != 'black') {
-//                             stRoom = `The room is lit by ${color(state)} colors.`;
-//                             stInstallation = `There is ${describeInstallation(state)} in the center.`;
-//                             stWall = describeWall(state)
-//                         } else {
-//                             stRoom =
-//                                 "I go down to all fours and start groping around the room. " +
-//                                 "The floor feels cold, probably marble.";
-//                         }
-
-//                         if (state.stick === 'not found') {
-//                             stStick = 'I have found a stick on the floor.'
-//                             state = { ...state, stick: "has" };
-//                         }
-
-//                         return [[stRoom, stInstallation, stWall, stStick], state];
-//                     }
-//                     default:
-//                         assertNever(obj);
 //                 }
 //                 break;
 //             case 'move':
-//                 switch (obj) {
-//                     case 'disk':
-//                     case 'disks':
-//                         return step('use ' + obj, state);
-//                     case 'small-disk':
-//                     case 'medium-disk':
-//                     case 'large-disk':
-//                         const fromStick = getStickPosition(obj, state);
-
-//                         if (allowedPositions(obj, state).includes(toStick)) {
-//                             state = { ...state, ...setStickPosition(obj, toStick) };
-
-//                             const stMove = `I carefully lift the disk and place it on ${toStick}.`;
-//                             const stAction =
-//                                 fromStick == 'stick-2' ? `As soon as I lift the disk, it stops glowing.` :
-//                                     toStick == 'stick-2' ? `The disk starts glowing in ${diskColor(obj)} illuminating the room. ${describeWall(state)}` :
-//                                         '';
-
-//                             return [[stMove, stAction, hanoi(state)], state];
-//                         } else if (toStick == undefined) {
-//                             return [diskUsage(obj, state), state];
-//                         } else {
-//                             return [[`That doesn't work.`, diskUsage(obj, state)], state];
-//                         }
-//                     case 'pocket':
-//                     case 'matches':
-//                     case 'room':
-//                     case 'stick':
-//                     case 'installation':
-//                     case 'wall':
-//                     case 'darkness':
-//                         break;
-//                     default:
-//                         assertNever(obj);
-//                 }
 //                 break;
 //             case 'use':
 //                 switch (obj) {
-//                     case undefined:
-//                         return ["What do you want to use?", state];
 //                     case 'wall':
 //                         return ["It's of no use.", {}];
-//                     case 'darkness':
-//                         return ["Luke, I'm your father...", {}];
-//                     case 'disk':
-//                         return ["Which one? There is a small disk, a medium disk and a large disk.", state];
-//                     case 'disks':
-//                         return [`I can move the disks between the sticks one by one.`, {}];
-//                     case 'small-disk':
-//                     case 'medium-disk':
-//                     case 'large-disk':
-//                         return [diskUsage(obj, state), state];
-
-//                     case 'matches':
-
-//                         switch (state.matches) {
-//                             case 'has':
-//                                 state = { ...state, matches: "used" }
-//                                 let stMsg = '';
-//                                 if (color(state) !== 'black') {
-//                                     stMsg = `I lit my last match, but drop it on the floor accidentally.`
-//                                 } else {
-//                                     stMsg =
-//                                         `Light illuminates the place for a moment. ` +
-//                                         `There is ${describeInstallation(state)} in front of you. ` +
-//                                         `The flare goes out quickly. It's dark again.`;
-//                                 }
-
-//                                 return [stMsg, state];
-//                             case 'used':
-//                                 return ["I have ran out of matches", state];
-//                             default:
-//                                 assertNever(state.matches);
-//                         }
-//                         break
-//                     case 'installation':
-//                         return step('examine installation', state);
-//                     case 'stick':
-
-//                     case 'pocket':
 //                         return step('examine pocket', state);
-//                     case 'room':
-//                         return step('examine room', state);
 //                     default:
 //                         assertNever(obj);
 //                 }
@@ -709,6 +603,5 @@ function hanoi(state: State): string {
 //     } catch (e) {
 //         // console.error(e);
 //     }
-//     return ["I don't understand", state];
 
 // }
