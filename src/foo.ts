@@ -9,7 +9,7 @@ type State = {
     hole: Item;
 
     leftStick: Item;
-    middleStick: Item;
+    centerStick: Item;
     missingStick: Item & {used: boolean};
 
     smallDisk: Disk;
@@ -21,7 +21,7 @@ type State = {
     pocket: Item;
 }
 
-type DiskLocation = 'left stick' | 'middle stick' | 'right stick'
+type DiskLocation = 'left stick' | 'center stick' | 'right stick'
 type Disk = Item & {location: DiskLocation, color: string};
 type Result = string | [string | string[], Partial<State>];
 
@@ -95,7 +95,7 @@ function describeWall(state: State): string {
         const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()];
         if (ch === '\n') {
             res += '\n';
-        } else if (disk.location === 'middle stick') {
+        } else if (disk.location === 'center stick') {
             res += colorize(ch, disk.color)
         } else {
             res += ' ';
@@ -251,8 +251,8 @@ function step(st: string, state: State): Result {
 
                         const stMove = `You carefully lift the disk and place it on the ${fullName(toStick)}.`;
                         const stAction =
-                            fromStick === state.middleStick ? `As soon as you lift the disk, it stops glowing.` :
-                            toStick === state.middleStick ? `The disk starts glowing in ${disk.color} illuminating the room.` :
+                            fromStick === state.centerStick ? `As soon as you lift the disk, it stops glowing.` :
+                            toStick === state.centerStick ? `The disk starts glowing in ${disk.color} illuminating the room.` :
                             '';
 
                         state = {...state, ...upd};
@@ -324,11 +324,15 @@ export function main(element: HTMLElement) {
                 if (state.matches.used) {
                     return `You have ran out of matches.`
                 } else {
-                    const msg =  
-                        color(state) !== 'black' ? `You lit your last match, but drop it on the floor accidentally.` :
-                                                   `Light illuminates the place for a moment. ` +
-                                                   `There is ${a(installation.name)} in front of you. ` +
-                                                   `The flare goes out quickly. It's dark again.`;
+                    let msg = '';
+                    if (color(state) !== 'black') {
+                        msg = `You lit your last match, but drop it on the floor accidentally.`;
+                    } else {
+                        msg = `Light illuminates the place for a moment. ` +
+                            `There is ${a(installation.name)} in front of you, ` +
+                            `but you don't have time to examine it better, ` +
+                            `the flare goes out quickly. You are in the darkness again.`;
+                    }
                     const upd : Partial<State> = {
                         installation: {...installation, access: 'available'},
                         matches: {...state.matches, used: true},
@@ -352,7 +356,7 @@ export function main(element: HTMLElement) {
                 hole:        {...state.hole, access: 'available'},
 
                 leftStick:   {...state.leftStick,  access: 'available'},
-                middleStick: {...state.middleStick,  access: 'available'},
+                centerStick: {...state.centerStick,  access: 'available'},
                 
                 smallDisk:   {...state.smallDisk,  access: 'available'},
                 mediumDisk:  {...state.mediumDisk,  access: 'available'},
@@ -374,8 +378,8 @@ export function main(element: HTMLElement) {
         examine: () => `It's made of wood, about two spans long.`
     });
 
-    const middleStick = makeItem({
-        name: ['stick', 'sticks', 'sticks','middle stick'],
+    const centerStick = makeItem({
+        name: ['stick', 'sticks', 'sticks','center stick'],
         access: 'not found',
         examine: () => `It's made of wood, about two spans long.`
     });
@@ -422,7 +426,7 @@ export function main(element: HTMLElement) {
                     const self = getItemsByName(state, fullName)[0] as Disk;
                     if (self == null) {
                         return `You don't have it.`;
-                    } else if (self.location === 'middle stick') {
+                    } else if (self.location === 'center stick') {
                         return `It's made of glass and glowing in ${self.color}, illuminating the room.`;
                     } else {
                         return `It's made of glass.`;
@@ -467,7 +471,7 @@ export function main(element: HTMLElement) {
         installation,
         hole,
         leftStick,
-        middleStick,
+        centerStick,
         missingStick,
         matches,
         darkness,
@@ -485,7 +489,7 @@ export function main(element: HTMLElement) {
     term.loadAddon(fitAddon);
     fitAddon.fit();
 
-    term.writeln(`- Ouch that hurt! What's this darkness? Where is everyone?`);
+    term.writeln(`- Ouch, that hurts! What's this darkness? Where is everyone?`);
     term.write('\n> ');
     let command = '';
     term.onData(e => {
@@ -523,9 +527,9 @@ export function main(element: HTMLElement) {
 }
 
 function color(state: State): string {
-    const r = state.smallDisk.location === 'middle stick';
-    const g = state.mediumDisk.location === 'middle stick';
-    const b = state.largeDisk.location === 'middle stick';
+    const r = state.smallDisk.location === 'center stick';
+    const g = state.mediumDisk.location === 'center stick';
+    const b = state.largeDisk.location === 'center stick';
 
     if (r && g && b) { return "white" }
     else if (r && g && !b) { return "yellow"; }
@@ -557,13 +561,13 @@ function hanoi(state: State): string {
 
     const rowByStick = {
         'left stick': 3,
-        'middle stick': 3,
+        'center stick': 3,
         'right stick': 3
     }
 
     const colByStick = {
         'left stick': 2,
-        'middle stick': 11,
+        'center stick': 11,
         'right stick': 21
     }
 
@@ -593,8 +597,8 @@ function hanoi(state: State): string {
 
 function allowedPositions(disk: Disk, state: State):  Item[] {
     let targetLocations: string[] = state.missingStick.used ? 
-        ['left stick', 'middle stick', 'right stick'] : 
-        ['left stick', 'middle stick'];
+        ['left stick', 'center stick', 'right stick'] : 
+        ['left stick', 'center stick'];
 
     if (disk === state.smallDisk) {
         targetLocations = targetLocations.filter(x => x !== state.smallDisk.location);
