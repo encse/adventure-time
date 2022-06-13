@@ -1,6 +1,7 @@
 import 'xterm/css/xterm.css';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
+import { highlight, lineBreak } from './textUtils';
 
 type State = {
     matches: Item & {used: boolean};
@@ -257,7 +258,7 @@ function step(st: string, state: State): Result {
                                 const stMove = `You carefully lift the disk and place it on the ${fullName(toStick)}.`;
                                 const stAction =
                                     fromStick === state.centerStick ? `As soon as you lift the disk, it stops glowing.` :
-                                    toStick === state.centerStick ? `The disk starts glowing in ${disk.color} illuminating the room.` :
+                                    toStick === state.centerStick ? `The disk starts glowing in ${disk.color}, illuminating the room.` :
                                     '';
 
                                 state = {...state, ...upd};
@@ -274,12 +275,13 @@ function step(st: string, state: State): Result {
     return "I don't understand.";
 }
 
+
 export function main(element: HTMLElement) {
     const room = makeItem({
         name: 'room',
         look: (state:State): Result => 
             color(state) !== 'black' ? state.room.examine(state) :
-            !state.matches.used      ? `You don't see anything, but you have a box of matches in your pocket.` :
+            !state.matches.used      ? `You don't see anything, but you have a {{box of matches}} in your {{pocket}}.` :
                                        `Your eyes got used to the darkness already. But apart from the chaotic triggering of your neurons making some fake sparkles you don't see a thing.`,
         examine: (state: State): Result =>  {
             let stRoom = '';
@@ -289,8 +291,8 @@ export function main(element: HTMLElement) {
             let upd: Partial<State> = {};
 
             if (color(state) !== 'black') {
-                stRoom = `The dim light from the installation paints the room with ${color(state)} colors. It's much more friendly now.`;
-                stWall = `You notice some writing on the wall. `
+                stRoom = `The dim light of the installation fills the room with ${color(state)} colors. It's much more friendly now. `;
+                stWall = `You notice some writing on the {{wall}}. `
             } else {
                 stRoom =
                     "You go down to all fours and start groping around the room. " +
@@ -334,7 +336,7 @@ export function main(element: HTMLElement) {
                         msg = `You lit your last match, but drop it on the floor accidentally.`;
                     } else {
                         msg = `Light illuminates the place for a moment. ` +
-                            `There is ${a(installation.name)} in front of you, ` +
+                            `There is {{${a(installation.name)}}} in front of you, ` +
                             `but you don't have time to examine it well. ` +
                             `The flare goes out quickly and you are alone in the darkness again.`;
                     }
@@ -354,8 +356,8 @@ export function main(element: HTMLElement) {
         examine: (state: State): Result => {
 
             const msg = state.missingStick.used ?
-                `It's a tower of Hanoi game with a small, a medium and a large disk.` :
-                `The installation consists of a small, a medium and a large disk on two sticks. There is a hole for a third stick to the right.`;
+                `It's a tower of Hanoi game with a {{small}}, a {{medium}} and a {{large disk}}.` :
+                `The installation consists of a {{small}}, a {{medium}} and a {{large disk}} on two {{sticks}}. There is a {{hole}} for a third stick to the right.`;
 
             const upd: Partial<State> = {
                 hole:        {...state.hole, access: 'available'},
@@ -494,13 +496,14 @@ export function main(element: HTMLElement) {
     term.loadAddon(fitAddon);
     fitAddon.fit();
 
+
     term.writeln(``);
     term.writeln(`                       Adventure time!                  `);
     term.writeln(`          https://github.com/encse/text-adventure       `);
     term.writeln(``);
     term.writeln(``);
     term.writeln(``);
-    term.writeln(`- Ouch, that hurts! What's this darkness? Where is everyone?`);
+    term.writeln(highlight(`- Ouch, that hurts! What's this {{darkness}}? Where is everyone?`));
     term.write('\n> ');
     let command = '';
     term.onData(e => {
@@ -517,8 +520,8 @@ export function main(element: HTMLElement) {
             }
 
             msg = msg.trim();
-            msg = msg.replaceAll('\n', '\r\n');
-            term.writeln(msg);
+            msg = highlight(msg);
+            term.writeln(lineBreak(msg, 80).replaceAll('\n', '\r\n'));
             command = '';
             term.write('\n> ');
             break;
