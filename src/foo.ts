@@ -226,9 +226,11 @@ function step(st: string, state: State): Result {
                 let where = parts[1].trim();
 
                 if (where === 'left') {where = 'left stick';}
+                if (where === 'right' && !state.missingStick.used ) {where = 'center stick';}
                 if (where === 'right') {where = 'right stick';}
                 if (where === 'center') {where = 'center stick';}
                 if (where === 'middle') {where = 'center stick';}
+
                
                 const objAs = getItemsByName(state, what);
                 const objBs = getItemsByName(state, where);
@@ -241,6 +243,8 @@ function step(st: string, state: State): Result {
                     return disambiguate(objAs);
                 } else if (objBs.length > 1) {
                     return disambiguate(objBs);
+                } else if (toStick === getItemsByName(state, disk.location)[0]) {
+                    return `It's already there.`;
                 } else if (!isTopDisk(disk, state)) {
                     return `The disks are heavy and you don't want to break them, try moving the disk on the top of the stick first. `;
                 } else if (!allowedPositions(disk, state).includes(toStick)) {
@@ -379,7 +383,7 @@ export function main(element: HTMLElement) {
     });
 
     const centerStick = makeItem({
-        name: ['stick', 'sticks', 'sticks', 'middle stick', 'center stick'],
+        name: ['stick', 'sticks', 'middle stick', 'center stick'],
         access: 'not found',
         examine: () => `It's made of wood, about two spans long.`
     });
@@ -402,9 +406,9 @@ export function main(element: HTMLElement) {
                 if (state.missingStick.used) {
                     return `The stick is stuck.`;
                 } else if (state.hole.access === 'available') {
-                    const msg = `You screw the stick into the hole in the installation like if it was some IKEA furniture (an Ünstallation). It fits there perfectly, the whole thing starts to make sense now.`;
+                    const msg = `You twist the stick into the hole of the installation like it was some IKEA furniture (an Ünstallation). It fits there perfectly, the whole thing starts to make sense now.`;
                     const upd: Partial<State> = {
-                        missingStick: {...state.missingStick, alias: ['stick', 'right stick'], used: true}
+                        missingStick: {...state.missingStick, alias: ['stick', 'sticks', 'right stick'], used: true}
                     } 
                     return [msg, upd];
                 } else {
