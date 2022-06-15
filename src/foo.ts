@@ -3,6 +3,10 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { highlight, lineBreak } from './textUtils';
 
+import c from 'ansi-colors';
+c.enabled = true;
+type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white' | 'grey'
+
 type State = {
     matches: Item & {used: boolean};
     darkness: Item;
@@ -23,7 +27,7 @@ type State = {
 }
 
 type DiskLocation = 'left stick' | 'center stick' | 'right stick'
-type Disk = Item & {location: DiskLocation, color: string};
+type Disk = Item & {location: DiskLocation, color: Color};
 type Result = string | [string | string[], Partial<State>];
 
 function a(st: string) {
@@ -51,18 +55,8 @@ type Item = {
     parent: Item | null;
 }
 
-function colorize(st: string, color: string) {
-    const c = {
-        black: 0, 
-        red: 1, 
-        green:2,
-        yellow: 3, 
-        blue: 4,
-        magenta: 5,
-        cyan: 6,
-        white: 7,
-    }[color];
-    return `\u001b[3${c}m${st}\u001b[0m`;
+function colorize(st: string, color: Color): string {
+    return c[color](st);
 }
 
 function describeWall(state: State): string {
@@ -418,7 +412,7 @@ export function main(element: HTMLElement) {
         })
     };
 
-    const makeDisk = (shortName: string, color: string): Disk => {
+    const makeDisk = (shortName: string, color: Color): Disk => {
         const fullName = shortName +' disk'
         return {
             location: 'left stick',
@@ -565,18 +559,20 @@ function color(state: State): string {
 
 
 function hanoi(state: State): string {
-    let res = [
-        '                                '.split(''),
-        '                                '.split(''),
-        '                                '.split(''),
-        '                                '.split(''),
-        '=============================='.split(''),
-    ];
 
-    const empty = '    |    ';
-    const stSmallDisk = '  [***]  ';
-    const stMediumDisk = ' [*****] ';
-    const stLargeDisk = '[*******]';
+    const empty = colorize('    |    ', 'grey');
+
+    const nonLitDisks = new Map<Disk, string>([
+        [state.smallDisk,  colorize('  [...]  ', 'grey')],
+        [state.mediumDisk, colorize(' [.....] ', 'grey')],
+        [state.largeDisk,  colorize('[.......]', 'grey')],
+    ])
+
+    const litDisks = new Map<Disk, string>([
+        [state.smallDisk,  colorize('  [***]  ', state.smallDisk.color)],
+        [state.mediumDisk, colorize(' [*****] ', state.mediumDisk.color)],
+        [state.largeDisk,  colorize('[*******]', state.largeDisk.color)],
+    ])
 
     const rowByStick = {
         'left stick': 3,
@@ -585,33 +581,40 @@ function hanoi(state: State): string {
     }
 
     const colByStick = {
-        'left stick': 2,
-        'center stick': 11,
-        'right stick': 21
+        'left stick': 0,
+        'center stick': 1,
+        'right stick': 2
     }
 
-    const draw = (st: string, col: number, row: number) => {
-        let i = 0;
-        for (let ch of st) {
-            res[row][col + i] = ch
-            i++;
-        }
-    }
+    let items: string[][]= [];
 
-    for (let row = 0; row < res.length - 1; row++) {
+    for (let row = 0; row < 4; row++) {
+        items[row] = []
         for (let col of Object.values(colByStick)) {
             if (!state.missingStick.used && col === colByStick['right stick']) {
-                continue;
+                items[row].push("          ")
+            } else {
+                items[row].push(empty)
             }
-            draw(empty, col, row);
         }
     }
 
-    draw(stLargeDisk, colByStick[state.largeDisk.location], rowByStick[state.largeDisk.location]--);
-    draw(stMediumDisk, colByStick[state.mediumDisk.location], rowByStick[state.mediumDisk.location]--);
-    draw(stSmallDisk, colByStick[state.smallDisk.location], rowByStick[state.smallDisk.location]--);
+    for (let disk of [state.largeDisk, state.mediumDisk, state.smallDisk]){
+        items[rowByStick[disk.location]--][colByStick[disk.location]] = 
+            disk.location === 'center stick' ? litDisks.get(disk)! : nonLitDisks.get(disk)!
+    }
 
-    return '\n\n' + res.map(line => '  ' +  line.join('')).join('\n')
+    let res = `\n\n`;
+    for (let row = 0; row < 4; row++) {
+        res += '  '+ items[row].join('  ') + '\n';
+    }
+
+    if(!state.missingStick.used){
+        res += colorize(` =====+==========+==========-=====\n`, 'grey');
+    }  else {
+        res += colorize(` =====+==========+==========+=====\n`, 'grey');
+    }
+    return res;
 }
 
 function allowedPositions(disk: Disk, state: State):  Item[] {
