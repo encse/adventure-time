@@ -335,8 +335,8 @@ export function main(element: HTMLElement) {
             name: ['matches', 'match', 'box of matches'],
             examine: (state) => 
                 state.matches.used ?
-                    `The small box brings back good memories from a club far away... That was a night! Unfortunately the box is empty, it has only nostalgic value now. `:
-                    `The small box brings back good memories from a club far away... That was a night! And it even has a last match, ready for use. `,
+                    `The small box brings back good memories. The Kickstand bar! Those were the days! Unfortunately the box is empty, it has only nostalgic value now. `:
+                    `The small box brings back good memories. The Kickstand bar! Those were the days! And it even has a last match, ready for use. `,
             use: (state: State) =>  {
                 if (state.matches.used) {
                     return `You have ran out of matches.`
