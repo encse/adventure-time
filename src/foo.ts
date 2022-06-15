@@ -6,6 +6,9 @@ import { highlight, lineBreak } from './textUtils';
 import c from 'ansi-colors';
 c.enabled = true;
 type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white' | 'grey'
+const konami = '\u001b[A\u001b[A\u001b[B\u001b[B\u001b[D\u001b[C\u001b[D\u001b[Cba';
+let konamiFound: boolean;
+let iddqd: boolean;
 
 type State = {
     matches: Item & {used: boolean};
@@ -158,6 +161,18 @@ function lumos(state: State) : string {
 }
 
 function step(st: string, state: State): Result {
+    if (st === konami) {
+        if (!konamiFound) {
+            konamiFound = true;
+            return 'You have found a secret!';
+        }
+    } else if (st === 'iddqd') {
+        if (!iddqd) {
+            iddqd = true;
+            return 'You have found a secret!';
+        }
+    }
+
     let verb = st.trim().split(' ')[0];
     let obj = st.trim().split(' ').slice(1).join(' ');
 
@@ -505,10 +520,18 @@ export function main(element: HTMLElement) {
     term.writeln(highlight(`- Ouch, that hurts! What's this {{darkness}}? Where is everyone?`));
     term.write('\n> ');
     let command = '';
+    let buffer = '';
+
     term.onData(e => {
+        buffer += e;
+        if (buffer.endsWith(konami)){
+            command = konami;
+            e = '\r';
+        }
         switch (e) {
           case '\r': // Enter
             term.writeln('\r');
+
             let res = step(command, state);
             let msg = ''
             if (typeof(res) == 'string'){
@@ -522,6 +545,7 @@ export function main(element: HTMLElement) {
             msg = highlight(msg);
             term.writeln(lineBreak(msg, windowWidth).replaceAll('\n', '\r\n'));
             command = '';
+            buffer = '';
             term.write('\n> ');
             break;
           case '\u007F': // Backspace (DEL)
