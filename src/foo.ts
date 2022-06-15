@@ -165,11 +165,15 @@ function step(st: string, state: State): Result {
         if (!konamiFound) {
             konamiFound = true;
             return 'You have found a secret!';
+        } else {
+            return 'Cheater!'
         }
     } else if (st === 'iddqd') {
         if (!iddqd) {
             iddqd = true;
             return 'You have found a secret!';
+        } else {
+            return 'Cheater!'
         }
     }
 
