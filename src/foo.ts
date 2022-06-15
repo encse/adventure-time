@@ -232,42 +232,35 @@ function step(st: string, state: State): Result {
                
                 const objAs = getItemsByName(state, what);
                 const objBs = getItemsByName(state, where);
+                const disk = objAs[0] as Disk;
+                const toStick = objBs[0];
 
-                if (objAs.length === 0) {
+                if (disk == null || disk.name !== 'disk' || toStick == null || toStick.name !== 'stick') {
                     return `Try "move <some> disk to <position>".`
                 } else if (objAs.length > 1) {
                     return disambiguate(objAs);
+                } else if (objBs.length > 1) {
+                    return disambiguate(objBs);
+                } else if (!isTopDisk(disk, state)) {
+                    return `The disks are heavy and you don't want to break them, try moving the disk on the top of the stick first. `;
+                } else if (!allowedPositions(disk, state).includes(toStick)) {
+                    return `You are not a Feng shui expert, but that disk would not look right there.`;
                 } else {
-                    const disk = objAs[0] as Disk;
-                    if (disk.name !== 'disk') {
-                        return `Try "move <some> disk to <position>".`
-                    } 
+                    const fromStick = getItemsByName(state, disk.location)[0];
+                
+                    const upd: Partial<State> = 
+                        disk === state.smallDisk ?  {smallDisk: {...state.smallDisk, location: fullName(toStick) as DiskLocation}} :
+                        disk === state.mediumDisk ? {mediumDisk: {...state.mediumDisk, location: fullName(toStick) as DiskLocation}} :
+                                                    {largeDisk: {...state.largeDisk, location: fullName(toStick) as DiskLocation}};
 
-                    if (objBs.length === 1) {
-                        const toStick = objBs[0];
+                    const stMove = `You carefully lift the disk and place it on the ${fullName(toStick)}.`;
+                    const stAction =
+                        fromStick === state.centerStick ? `As soon as you lift the disk, it stops glowing.` :
+                        toStick === state.centerStick ? `The disk starts glowing in ${disk.color}, illuminating the room.` :
+                        '';
 
-                        if (toStick.name === 'stick') {
-                            const fromStick = getItemsByName(state, disk.location)[0];
-                        
-                            if (allowedPositions(disk, state).includes(toStick)) {
-                                const upd: Partial<State> = 
-                                    disk === state.smallDisk ?  {smallDisk: {...state.smallDisk, location: fullName(toStick) as DiskLocation}} :
-                                    disk === state.mediumDisk ? {mediumDisk: {...state.mediumDisk, location: fullName(toStick) as DiskLocation}} :
-                                                                {largeDisk: {...state.largeDisk, location: fullName(toStick) as DiskLocation}};
-
-                                const stMove = `You carefully lift the disk and place it on the ${fullName(toStick)}.`;
-                                const stAction =
-                                    fromStick === state.centerStick ? `As soon as you lift the disk, it stops glowing.` :
-                                    toStick === state.centerStick ? `The disk starts glowing in ${disk.color}, illuminating the room.` :
-                                    '';
-
-                                state = {...state, ...upd};
-                                return [[stMove, stAction, hanoi(state)], state];
-                            } 
-                        }
-                    }
-
-                    return diskUsage(disk, state);
+                    state = {...state, ...upd};
+                    return [[stMove, stAction, hanoi(state)], state];
                 }
             }
         }
@@ -300,7 +293,7 @@ export function main(element: HTMLElement) {
             }
 
             if (state.missingStick.access === 'not found') {
-                stStick = 'You have found a stick on the floor. ';
+                stStick = 'You have found a {{stick}} on the floor. ';
                 upd = {missingStick: {...state.missingStick, access: 'available'}}
             }
 
@@ -325,8 +318,8 @@ export function main(element: HTMLElement) {
             name: ['matches', 'match', 'box of matches'],
             examine: (state) => 
                 state.matches.used ?
-                    `The box is empty`:
-                    `You have just a single match left.`,
+                    `The small box brings back good memories from a club far away... That was a night! Unfortunately the box is empty, it has only nostalgic value now. `:
+                    `The small box brings back good memories from a club far away... That was a night! And it even has a last match, ready for use. `,
             use: (state: State) =>  {
                 if (state.matches.used) {
                     return `You have ran out of matches.`
@@ -337,7 +330,7 @@ export function main(element: HTMLElement) {
                     } else {
                         msg = `Light illuminates the place for a moment. ` +
                             `There is {{${a(installation.name)}}} in front of you, ` +
-                            `but you don't have time to examine it well. ` +
+                            `but you don't have time to observe it well. ` +
                             `The flare goes out quickly and you are alone in the darkness again.`;
                     }
                     const upd : Partial<State> = {
@@ -402,14 +395,14 @@ export function main(element: HTMLElement) {
                 } else if (state.hole.access === 'available') {
                     return `The stick would fit into the hole in the installation.`
                 } else {
-                    return `It's made of wood, about two spans long.`;
+                    return `It's about two spans long. It's some kind of wood, based on its smell, it could be made of Elder.`;
                 }
             },
             use: (state) => {
                 if (state.missingStick.used) {
                     return `The stick is stuck.`;
                 } else if (state.hole.access === 'available') {
-                    const msg = `You insert the stick to the hole in the installation. It's starting to make sense now.`;
+                    const msg = `You screw the stick into the hole in the installation like if it was some IKEA furniture (an Ünstallation). It fits there perfectly, the whole thing starts to make sense now.`;
                     const upd: Partial<State> = {
                         missingStick: {...state.missingStick, alias: ['stick', 'right stick'], used: true}
                     } 
@@ -463,14 +456,17 @@ export function main(element: HTMLElement) {
         examine: (state) => {
             let st = ``;
             if (state.matches.access === 'available') {
-                st += `You have a box of matches.`;
+                st += `You have a box of matches. `;
             } 
 
             if (state.missingStick.access === 'available' && !state.missingStick.used) {
-                st += `You have a stick.`;
+                st += `You have a stick. `;
             }
 
             return st;
+        },
+        use: (sate) => {
+            return sate.pocket.examine(state);
         }
     });
 
@@ -495,11 +491,16 @@ export function main(element: HTMLElement) {
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
     fitAddon.fit();
+   
+    let windowWidth = 80;
 
+    term.onResize(evt => {
+        windowWidth = Math.min(80, evt.cols);
+    })
 
     term.writeln(``);
-    term.writeln(`                       Adventure time!                  `);
-    term.writeln(`          https://github.com/encse/text-adventure       `);
+    term.writeln(`                Adventure time!               `);
+    term.writeln(`    https://github.com/encse/text-adventure   `);
     term.writeln(``);
     term.writeln(``);
     term.writeln(``);
@@ -521,7 +522,7 @@ export function main(element: HTMLElement) {
 
             msg = msg.trim();
             msg = highlight(msg);
-            term.writeln(lineBreak(msg, 80).replaceAll('\n', '\r\n'));
+            term.writeln(lineBreak(msg, windowWidth).replaceAll('\n', '\r\n'));
             command = '';
             term.write('\n> ');
             break;
@@ -631,13 +632,12 @@ function allowedPositions(disk: Disk, state: State):  Item[] {
     return targetLocations.map(location => getItemsByName(state, location)[0]);
 }
 
-function diskUsage(disk: Disk, state: State): string {
-    const targetItems = allowedPositions(disk, state).map(item => fullName(item));
-    if (targetItems.length === 0) {
-        return `It's against the laws of the Universe to move that disk right now. Maybe later?`;
-    } else if (targetItems.length === 1) {
-        return `Try moving it to ${targetItems[0]}!`;
-    } else {
-        return `Try moving it to ${targetItems.slice(0, targetItems.length - 1).join(', ')} or ${targetItems[targetItems.length - 1]}!`;
+function isTopDisk(disk: Disk, state: State) {
+    if (disk === state.smallDisk) {
+        return true;
+    } else if (disk === state.mediumDisk) {
+        return state.smallDisk.location !== disk.location;
+    } else  {
+        return state.smallDisk.location !== disk.location && state.mediumDisk.location !== disk.location;
     }
 }
