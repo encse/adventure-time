@@ -343,9 +343,9 @@ export function main(element: HTMLElement) {
                 } else {
                     let msg = '';
                     if (color(state) !== 'black') {
-                        msg = `You lit your last match, but drop it on the floor accidentally.`;
+                        msg = `Fwoosh... ouch. You drop your last match to the floor.`;
                     } else {
-                        msg = `Light illuminates the place for a moment. ` +
+                        msg = `Fwoosh... Light illuminates the place for a moment. ` +
                             `There is {{${a(installation.name)}}} in front of you, ` +
                             `but you don't have time to observe it well. ` +
                             `The flare goes out quickly and you are alone in the darkness again.`;
