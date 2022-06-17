@@ -46,8 +46,6 @@ type ItemProps = {
     readonly parent?: Item
 };
 
-
-
 type Item = {
     name: string; 
     access: 'available' | 'not found' | 'consumed'; 
@@ -345,10 +343,10 @@ export function main(element: HTMLElement) {
                     if (color(state) !== 'black') {
                         msg = `Fwoosh... ouch. You drop your last match to the floor.`;
                     } else {
-                        msg = `Fwoosh... Light illuminates the place for a moment. ` +
+                        msg = `Fwoosh... sudden light illuminates the place for a moment. ` +
                             `There is {{${a(installation.name)}}} in front of you, ` +
                             `but you don't have time to observe it well. ` +
-                            `The flare goes out quickly and you are alone in the darkness again.`;
+                            `The fire goes out quickly and you stay alone in the darkness again.`;
                     }
                     const upd : Partial<State> = {
                         installation: {...installation, access: 'available'},
