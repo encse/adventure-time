@@ -13,22 +13,22 @@ export const wall = makeItem({
 
 function describeWall(state: State): string {
 
-    const message = [
-        `                                                                   `,
-        `                                                                   `,
-        `                      _____  _______      _____                    `,
-        `                     /  |  | \\   _  \\    /  |  |                 `,
-        `                    /   |  |_/  /_\\  \\  /   |  |_                `,
-        `                   /    ^   /\\  \\_/   \\/    ^   /               `,
-        `                   \\____   |  \\_____  /\\____   |                `,
-        `                        |__|        \\/      |__|                  `,
-        `                                                                   `,
-        `                  The page you requested doesn't exist.            `,
-        `                                                                   `,
-        `           Or who knows? We have a cool game here. Enjoy!          `,
-        `    If you manage to decipher this message, tag @encse on twitter. `,
-        `                                                                   `,
-    ].join('\n');
+    const lines = [
+        ``,
+        ``,
+        `   _____  _______      _____     `,
+        `  /  |  | \\   _  \\    /  |  |  `,
+        ` /   |  |_/  /_\\  \\  /   |  |_ `,
+        `/    ^   /\\  \\_/   \\/    ^   /`,
+        `\\____   |  \\_____  /\\____   | `,
+        `     |__|        \\/      |__|   `,
+        ``,
+        `The page you requested doesn't exist.`,
+        ``,
+        `Or who knows? We have a cool game here. Enjoy!`,
+        `If you manage to decipher this message, tag @encse on twitter.`,
+        ``,
+    ];
 
     let seed = 1;
     const random = () => {
@@ -38,15 +38,17 @@ function describeWall(state: State): string {
     }
     
     let res = '';
-    for (let ch of message) {
-        const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()];
-        if (ch === '\n') {
-            res += '\n';
-        } else if (disk.location === 'center stick') {
-            res += colorize(ch, disk.color)
-        } else {
-            res += ' ';
-        }
-    } 
+    for(let line of lines) {
+        res += '>>';
+        for (let ch of line) {
+            const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()];
+            if (disk.location === 'center stick') {
+                res += colorize(ch, disk.color)
+            } else {
+                res += ' ';
+            }
+        } 
+        res += '<<\n';
+    }
     return res;
 }

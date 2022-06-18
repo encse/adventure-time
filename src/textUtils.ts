@@ -1,9 +1,7 @@
 import c from 'ansi-colors';
+import stringWidth from 'string-width';
 
 
-export function center(text: string, width: number): string {
-    return text.padStart(text.length + (width-text.length) / 2, ' ');
-}
 
 
 export function lineBreak(text: string, width: number): string {
@@ -38,6 +36,16 @@ export function lineBreak(text: string, width: number): string {
         }
     }
     return lines.join('\n');
+}
+
+export function center(text: string, width: number): string {
+    return text.replace(new RegExp('\\>\\>(.*)\\<\\<', 'g'), (_, part) => {
+        const realLength = stringWidth(part);
+        if (width > realLength)
+            return  ' '.repeat((width - realLength) / 2) + part;
+        else
+            return part;
+    });
 }
 
 export function highlight(text: string): string {

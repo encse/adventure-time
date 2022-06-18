@@ -132,12 +132,20 @@ export function main(element: HTMLElement) {
     })
 
     const writeln = (text: string) => {
-        term.writeln(lineBreak(highlight(text), windowWidth).replaceAll('\n', '\r\n'));
+        term.writeln(
+            lineBreak(
+                center(
+                    highlight(text), 
+                    windowWidth
+                ), 
+                windowWidth
+            ).replaceAll('\n', '\r\n')
+        );
     }
 
     writeln(``);
-    writeln(center(`Adventure time!`, windowWidth));
-    writeln(center(`https://github.com/encse/text-adventure`, windowWidth));
+    writeln(`>>Adventure time!<<`);
+    writeln(`>>https://github.com/encse/text-adventure<<`);
     writeln(``);
     writeln(``);
     writeln(``);
