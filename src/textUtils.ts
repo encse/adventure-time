@@ -1,6 +1,10 @@
 import c from 'ansi-colors';
 
 
+export function center(text: string, width: number): string {
+    return text.padStart(text.length + (width-text.length) / 2, ' ');
+}
+
 
 export function lineBreak(text: string, width: number): string {
     let lines = text.split('\n');

@@ -1,7 +1,8 @@
 import 'xterm/css/xterm.css';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { highlight, lineBreak } from './textUtils';
+import { WebLinksAddon } from 'xterm-addon-web-links';
+import { center, highlight, lineBreak } from './textUtils';
 import {State, Result, color, getItemsByName, disambiguate} from './game-defs'
 import {room} from './items/room';
 import { wall } from './items/wall';
@@ -112,25 +113,35 @@ export function main(element: HTMLElement) {
         pocket,
     };
     
-    let term = new Terminal();
+    let term = new Terminal({
+        theme: {
+            foreground: '#00ff33'
+        }
+    });
     term.open(element);
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
+    term.loadAddon(new WebLinksAddon());
     fitAddon.fit();
    
-    let windowWidth = 80;
+    let windowWidth =  Math.min(80, term.cols - 1);
+    console.log(windowWidth);
 
     term.onResize(evt => {
-        windowWidth = Math.min(80, evt.cols);
+        windowWidth = Math.min(80, evt.cols - 1);
     })
 
-    term.writeln(``);
-    term.writeln(`                Adventure time!               `);
-    term.writeln(`    https://github.com/encse/text-adventure   `);
-    term.writeln(``);
-    term.writeln(``);
-    term.writeln(``);
-    term.writeln(highlight(`- Ouch, that hurts! What's this {{darkness}}? Where is everyone?`));
+    const writeln = (text: string) => {
+        term.writeln(lineBreak(highlight(text), windowWidth).replaceAll('\n', '\r\n'));
+    }
+
+    writeln(``);
+    writeln(center(`Adventure time!`, windowWidth));
+    writeln(center(`https://github.com/encse/text-adventure`, windowWidth));
+    writeln(``);
+    writeln(``);
+    writeln(``);
+    writeln(`- Ouch, that hurts! What's this {{darkness}}? Where is everyone?`);
     term.write('\n> ');
     let command = '';
     let buffer = '';
@@ -156,7 +167,7 @@ export function main(element: HTMLElement) {
 
             msg = msg.trim();
             msg = highlight(msg);
-            term.writeln(lineBreak(msg, windowWidth).replaceAll('\n', '\r\n'));
+            writeln(msg);
             command = '';
             buffer = '';
             term.write('\n> ');
