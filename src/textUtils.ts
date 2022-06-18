@@ -41,3 +41,8 @@ export function highlight(text: string): string {
     text = text.replace(new RegExp('\\{\\{([^}]*)\\}\\}', 'g'), c.italic('$1'));
     return text;
 }
+
+
+export function a(text: string): string {
+    return 'a ' + text;
+}

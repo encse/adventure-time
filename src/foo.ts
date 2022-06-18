@@ -1,64 +1,14 @@
 import 'xterm/css/xterm.css';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
-import { highlight, lineBreak } from './textUtils';
+import { highlight, lineBreak, a } from './textUtils';
+import {colorize, Color} from './colors';
+import {State, Item, Result, Disk, DiskLocation, makeItem, color} from './game-defs'
+import {room} from './items/room';
 
-import c from 'ansi-colors';
-c.enabled = true;
-type Color = 'black' | 'red' | 'green' | 'yellow' | 'blue' | 'magenta' | 'cyan' | 'white' | 'grey'
 const konami = '\u001b[A\u001b[A\u001b[B\u001b[B\u001b[D\u001b[C\u001b[D\u001b[Cba';
 let konamiFound: boolean;
 let iddqd: boolean;
-
-type State = {
-    matches: Item & {used: boolean};
-    darkness: Item;
-    installation: Item;
-    hole: Item;
-
-    leftStick: Item;
-    centerStick: Item;
-    missingStick: Item & {used: boolean};
-
-    smallDisk: Disk;
-    mediumDisk: Disk;
-    largeDisk: Disk;
-
-    room: Item;
-    wall: Item;
-    pocket: Item;
-}
-
-type DiskLocation = 'left stick' | 'center stick' | 'right stick'
-type Disk = Item & {location: DiskLocation, color: Color};
-type Result = string | [string | string[], Partial<State>];
-
-function a(st: string) {
-    return 'a ' + st;
-}
-
-type ItemProps = {
-    readonly name: string | string[], 
-    readonly access? : 'available' | 'not found' | 'consumed', 
-    readonly examine?: string | ((state: State) => Result), 
-    readonly look?: string | ((state: State) => Result), 
-    readonly use?: (state: State) => Result, 
-    readonly parent?: Item
-};
-
-type Item = {
-    name: string; 
-    access: 'available' | 'not found' | 'consumed'; 
-    alias: string[];
-    examine: (state: State) => Result; 
-    look: (state: State) => Result; 
-    use: (state: State) => Result;
-    parent: Item | null;
-}
-
-function colorize(st: string, color: Color): string {
-    return c[color](st);
-}
 
 function describeWall(state: State): string {
 
@@ -115,34 +65,6 @@ function getItemsByName(state: State, name: string): Item[] {
     return Object.values(state).filter(item => item.access === 'available' && item.alias.includes(name));
 }
 
-function makeItem(props: ItemProps) : Item {
-    const name  = typeof(props.name) == 'string' ? props.name : props.name[0];
-    const examine = 
-        props.examine == null ? () => `It's just ${a(name)}` :
-        typeof(props.examine) == 'string' ? () => props.examine as string :
-        props.examine;
-
-    const look = 
-        props.look == null ? (state: State) => {
-            if (color(state) === 'black') { 
-                return `Try to examine things with your hands instead.`;
-            } else {
-                return examine(state);
-            }
-        }:
-        typeof(props.look) == 'string' ? () => props.look as string :
-        props.look;
-
-    return {
-        name: name,
-        access: props.access ?? 'available',
-        alias: typeof(props.name) == 'string' ? [name] : props.name,
-        examine: examine,
-        look: look,
-        use: props.use != null ? props.use : () => `You don't know how to use it.`,
-        parent: props.parent ?? null,
-   };
-}
 
 function lumos(state: State) : string {
     if (color(state) !== 'black') {
@@ -285,37 +207,7 @@ function step(st: string, state: State): Result {
 
 
 export function main(element: HTMLElement) {
-    const room = makeItem({
-        name: 'room',
-        look: (state:State): Result => 
-            color(state) !== 'black' ? state.room.examine(state) :
-            !state.matches.used      ? `You don't see anything, but you have a {{box of matches}} in your {{pocket}}.` :
-                                       `Your eyes got used to the darkness already. But apart from the chaotic triggering of your neurons making some fake sparkles you don't see a thing.`,
-        examine: (state: State): Result =>  {
-            let stRoom = '';
-            let stWall = '';
-            let stStick = '';
-
-            let upd: Partial<State> = {};
-
-            if (color(state) !== 'black') {
-                stRoom = `The dim light of the installation fills the room with ${color(state)} colors. It's much more friendly now. `;
-                stWall = `You notice some writing on the {{wall}}. `
-            } else {
-                stRoom =
-                    "You go down to all fours and start groping around the room. " +
-                    "The floor feels cold, probably marble. ";
-            }
-
-            if (state.missingStick.access === 'not found') {
-                stStick = 'You have found a {{stick}} on the floor. ';
-                upd = {missingStick: {...state.missingStick, access: 'available'}}
-            }
-
-            const msg = stRoom + stWall + stStick;
-            return [msg, upd];
-        }
-    });
+    
 
     const darkness = makeItem({
             name:    'darkness', 
@@ -565,23 +457,6 @@ export function main(element: HTMLElement) {
       });
 }
 
-function color(state: State): string {
-    const r = state.smallDisk.location === 'center stick';
-    const g = state.mediumDisk.location === 'center stick';
-    const b = state.largeDisk.location === 'center stick';
-
-    if (r && g && b) { return "white" }
-    else if (r && g && !b) { return "yellow"; }
-    else if (r && !g && b) { return "purple"; }
-    else if (r && !g && !b) { return "red"; }
-    else if (!r && g && b) { return "cyan"; }
-    else if (!r && g && !b) { return "green"; }
-    else if (!r && !g && b) { return "blue"; }
-    else if (!r && !g && !b) { return "black"; }
-    else {
-        throw new Error();
-    }
-}
 
 
 function hanoi(state: State): string {
@@ -674,3 +549,4 @@ function isTopDisk(disk: Disk, state: State) {
         return state.smallDisk.location !== disk.location && state.mediumDisk.location !== disk.location;
     }
 }
+
