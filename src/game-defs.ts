@@ -9,7 +9,6 @@ export type ItemProps = {
     readonly examine?: string | ((state: State) => Result), 
     readonly look?: string | ((state: State) => Result), 
     readonly use?: (state: State) => Result, 
-    readonly parent?: Item
 };
 
 export type Item = {
@@ -60,6 +59,16 @@ export function color(state: State): Color {
 
 export type DiskLocation = 'left stick' | 'center stick' | 'right stick';
 export type Disk = Item & {location: DiskLocation, color: Color};
+
+export function getItemsByName(state: State, name: string): Item[] {
+    return Object.values(state).filter(item => item.access === 'available' && item.alias.includes(name));
+}
+
+export function disambiguate(items: Item[]) {
+    let msg = `Which one do you want?\n`;
+    let list = items.map(item => `- ` + item.alias[item.alias.length - 1]).join('\n');
+    return msg + list + '\n';
+}
 
 export function makeItem(props: ItemProps) : Item {
     const name  = typeof(props.name) == 'string' ? props.name : props.name[0];
