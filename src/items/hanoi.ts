@@ -1,5 +1,6 @@
 import { colorize } from "../colors";
-import { makeItem, State, Result, Disk, DiskLocation, getItemsByName, Item, disambiguate } from "../game-defs";
+import { makeItem, State, Result, Disk, getItemsByName, Item, DiskLocation } from "../game-defs";
+import { disambiguate } from "../verbs/feedback";
 
 export const installation = makeItem({
     name: ['weird installation', 'installation'],
@@ -39,7 +40,6 @@ export function move(state: State, obj: string): Result {
         if (where === 'right') {where = 'right stick';}
         if (where === 'center') {where = 'center stick';}
         if (where === 'middle') {where = 'center stick';}
-
        
         const objAs = getItemsByName(state, what);
         const objBs = getItemsByName(state, where);
@@ -137,13 +137,6 @@ function describeHanoi(state: State): string {
     return res;
 }
 
-
-function fullName(item: Item) {
-    return item.alias[item.alias.length - 1];
-}
-
-
-
 function allowedPositions(disk: Disk, state: State):  Item[] {
     let targetLocations: string[] = state.missingStick.used ? 
         ['left stick', 'center stick', 'right stick'] : 
@@ -176,3 +169,6 @@ function isTopDisk(disk: Disk, state: State) {
     }
 }
 
+function fullName(item: Item) {
+    return item.alias[item.alias.length - 1];
+}

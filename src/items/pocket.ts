@@ -1,4 +1,4 @@
-import { makeItem } from "../game-defs";
+import { makeItem, Result, State } from "../game-defs";
 
 export const pocket = makeItem({
     name: 'pocket', 
@@ -18,3 +18,7 @@ export const pocket = makeItem({
         return state.pocket.examine(state);
     }
 });
+
+export function inventory(state: State, obj: string): Result {
+    return state.pocket.examine(state);
+}

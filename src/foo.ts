@@ -3,39 +3,24 @@ import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { center, highlight, lineBreak } from './textUtils';
-import {State, Result, color, getItemsByName, disambiguate} from './game-defs'
+import {State, Result} from './game-defs'
 import {room} from './items/room';
 import { wall } from './items/wall';
-import { pocket } from './items/pocket';
+import { pocket, inventory } from './items/pocket';
 import { smallDisk, mediumDisk, largeDisk } from './items/disk';
 import { darkness } from './items/darkness';
-import { matches } from './items/box-of-matches';
+import { matches } from './items/box-o-match';
 import { installation, move } from './items/hanoi';
-import { centerStick, leftStick, lumos, missingStick } from './items/sticks';
+import { centerStick, leftStick, missingStick, lumos } from './items/sticks';
 import { hole } from './items/hole';
-
-const konami = '\u001b[A\u001b[A\u001b[B\u001b[B\u001b[D\u001b[C\u001b[D\u001b[Cba';
-let konamiFound: boolean;
-let iddqd: boolean;
-
+import { hello } from './verbs/hello';
+import { examine } from './verbs/examine';
+import { look } from './verbs/look';
+import { help } from './verbs/help';
+import { use } from './verbs/use';
+import { iddqd, konami, konamiCode, secrets } from './items/secrets';
 
 function step(st: string, state: State): Result {
-    if (st === konami) {
-        if (!konamiFound) {
-            konamiFound = true;
-            return 'You have found a secret!';
-        } else {
-            return 'Cheater!'
-        }
-    } else if (st === 'iddqd') {
-        if (!iddqd) {
-            iddqd = true;
-            return 'You have found a secret!';
-        } else {
-            return 'Cheater!'
-        }
-    }
-
     let verb = st.trim().split(' ')[0];
     let obj = st.trim().split(' ').slice(1).join(' ');
 
@@ -49,47 +34,25 @@ function step(st: string, state: State): Result {
 
     switch (verb) {
         case 'hello':
-            if (color(state) === 'black') {
-                return "Is it a good idea to start making noise in a dark room?\n- Hello!\nNo answer. Not sure if this is a bad thing though.";
-            } else {
-                return "- Khmm ... hello?\nNobody is here.";
-            }
+            return hello(state, obj);   
+        case konamiCode:
+            return konami(state, obj);
+        case 'iddqd':
+            return iddqd(state, obj);
         case 'lumos': 
             return lumos(state);
         case 'inventory': 
-            return step('examine pocket', state);
+            return inventory(state, obj);
         case 'help':
-            return "Look around, examine things and try to use them.";
+            return help(state, obj);
         case 'look':
+            return look(state, obj);
         case 'examine':
-            if (obj === '') {
-                return state.room[verb](state);
-            } else {
-                const items = getItemsByName(state, obj);
-                if (items.length === 1) {
-                    return items[0][verb](state)
-                } else if (items.length > 1) {
-                    return disambiguate(items);
-                } else {
-                    return `You don't have it.`;
-                }
-            }
+            return examine(state, obj);
         case 'use':
-            if (obj === '') {
-                return `What do you want to use?`;
-            } else {
-                const items = getItemsByName(state, obj);
-                if (items.length === 1 ) {
-                    return items[0].use(state);
-                } else if (items.length > 1){
-                    return disambiguate(items);
-                } else {
-                    return `You don't have it.`;
-                }
-            }
-        case 'move': {
+            return use(state, obj);
+        case 'move':
             return move(state, obj)
-        }
     }
     return "I don't understand.";
 }
@@ -111,6 +74,7 @@ export function main(element: HTMLElement) {
         largeDisk,
         wall,
         pocket,
+        secrets,
     };
     
     let term = new Terminal({
@@ -125,22 +89,18 @@ export function main(element: HTMLElement) {
     fitAddon.fit();
    
     let windowWidth =  Math.min(80, term.cols - 1);
-    console.log(windowWidth);
-
-    term.onResize(evt => {
-        windowWidth = Math.min(80, evt.cols - 1);
-    })
 
     const writeln = (text: string) => {
-        term.writeln(
-            lineBreak(
-                center(
-                    highlight(text), 
-                    windowWidth
-                ), 
+        text = lineBreak(
+            center(
+                highlight(text), 
                 windowWidth
-            ).replaceAll('\n', '\r\n')
+            ), 
+            windowWidth
         );
+        for (const line of text.split('\n')){
+            term.writeln(line);
+        }
     }
 
     writeln(``);
@@ -156,8 +116,8 @@ export function main(element: HTMLElement) {
 
     term.onData(e => {
         buffer += e;
-        if (buffer.endsWith(konami)){
-            command = konami;
+        if (buffer.endsWith(konamiCode)){
+            command = konamiCode;
             e = '\r';
         }
         switch (e) {
@@ -172,12 +132,10 @@ export function main(element: HTMLElement) {
                 state = { ...state, ...res[1] };
                 msg = Array.isArray(res[0]) ? res[0].filter(x => x !== '').join(' ') : res[0];
             }
-
-            msg = msg.trim();
-            msg = highlight(msg);
-            writeln(msg);
             command = '';
             buffer = '';
+
+            writeln(msg.trim());
             term.write('\n> ');
             break;
           case '\u007F': // Backspace (DEL)
@@ -194,3 +152,4 @@ export function main(element: HTMLElement) {
         }
       });
 }
+

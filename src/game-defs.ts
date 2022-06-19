@@ -37,6 +37,7 @@ export type State = {
     readonly room: Item;
     readonly wall: Item;
     readonly pocket: Item;
+    readonly secrets: Secrets;
 }
 
 export function color(state: State): Color {
@@ -57,17 +58,12 @@ export function color(state: State): Color {
     }
 }
 
+export type Secrets = Item & { konamiFound: boolean, iddqdFound: boolean }
 export type DiskLocation = 'left stick' | 'center stick' | 'right stick';
 export type Disk = Item & {location: DiskLocation, color: Color};
 
 export function getItemsByName(state: State, name: string): Item[] {
     return Object.values(state).filter(item => item.access === 'available' && item.alias.includes(name));
-}
-
-export function disambiguate(items: Item[]) {
-    let msg = `Which one do you want?\n`;
-    let list = items.map(item => `- ` + item.alias[item.alias.length - 1]).join('\n');
-    return msg + list + '\n';
 }
 
 export function makeItem(props: ItemProps) : Item {
