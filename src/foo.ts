@@ -13,11 +13,11 @@ import { matches } from './items/box-o-match';
 import { installation, move } from './items/hanoi';
 import { centerStick, leftStick, missingStick, lumos } from './items/sticks';
 import { hole } from './items/hole';
-import { hello } from './verbs/hello';
-import { examine } from './verbs/examine';
-import { look } from './verbs/look';
-import { help } from './verbs/help';
-import { use } from './verbs/use';
+import { hello } from './commands/hello';
+import { examine } from './commands/examine';
+import { look } from './commands/look';
+import { help } from './commands/help';
+import { use } from './commands/use';
 import { iddqd, konami, konamiCode, secrets } from './items/secrets';
 
 function step(st: string, state: State): Result {

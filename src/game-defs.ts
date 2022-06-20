@@ -66,7 +66,7 @@ export function getItemsByName(state: State, name: string): Item[] {
     return Object.values(state).filter(item => item.access === 'available' && item.alias.includes(name));
 }
 
-export function makeItem(props: ItemProps) : Item {
+export function makeItem<T>(props: ItemProps & T) : Item & T {
     const name  = typeof(props.name) == 'string' ? props.name : props.name[0];
     const examine = 
         props.examine == null ? () => `It's just ${a(name)}` :
@@ -76,7 +76,7 @@ export function makeItem(props: ItemProps) : Item {
     const look = 
         props.look == null ? (state: State) => {
             if (color(state) === 'black') { 
-                return `Try to examine things with your hands instead.`;
+                return `It's too dark, try to {{examine}} things with your hands instead.`;
             } else {
                 return examine(state);
             }
@@ -85,6 +85,7 @@ export function makeItem(props: ItemProps) : Item {
         props.look;
 
     return {
+        ...props,
         name: name,
         access: props.access ?? 'available',
         alias: typeof(props.name) == 'string' ? [name] : props.name,

@@ -1,6 +1,6 @@
 import { colorize } from "../colors";
 import { makeItem, State, Result, Disk, getItemsByName, Item, DiskLocation } from "../game-defs";
-import { disambiguate } from "../verbs/feedback";
+import { disambiguate } from "../commands/feedback";
 
 export const installation = makeItem({
     name: ['weird installation', 'installation'],

@@ -3,16 +3,16 @@ import { makeItem, Result, State } from "../game-defs";
 export const pocket = makeItem({
     name: 'pocket', 
     examine: (state) => {
-        let st = ``;
+        let st = [`You have:`];
         if (state.matches.access === 'available') {
-            st += `You have a box of matches. `;
+            st.push(`- a box of matches. `);
         } 
 
         if (state.missingStick.access === 'available' && !state.missingStick.used) {
-            st += `You have a stick. `;
+            st.push(`You have a stick. `);
         }
 
-        return st;
+        return st.join('\n');
     },
     use: (state) => {
         return state.pocket.examine(state);

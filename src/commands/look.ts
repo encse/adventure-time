@@ -1,9 +1,9 @@
 import { getItemsByName, Result, State } from "../game-defs";
-import { disambiguate } from "./feedback";
+import { disambiguate, dontUnderstand } from "./feedback";
 
 export function look(state: State, obj: string): Result {
     if (obj === '') {
-        return state.room.examine(state);
+        return state.room.look(state);
     } else {
         const items = getItemsByName(state, obj);
         if (items.length === 1) {
@@ -11,7 +11,7 @@ export function look(state: State, obj: string): Result {
         } else if (items.length > 1) {
             return disambiguate(items);
         } else {
-            return `You don't see "{obj}" around.`;
+            return dontUnderstand(state, obj);
         }
     }
 }

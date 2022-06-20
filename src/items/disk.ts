@@ -7,24 +7,22 @@ export const largeDisk = makeDisk('large', 'blue');
 
 function makeDisk(shortName: string, color: Color): Disk {
     const fullName = shortName +' disk'
-    return {
+    return makeItem({
         location: 'left stick',
         color: color,
-        ...makeItem({
-            access: 'not found',
-            name: ['disk', 'disks', fullName],
-            examine: (state) => {
-                const self = getItemsByName(state, fullName)[0] as Disk;
-                if (self == null) {
-                    return `You don't have it.`;
-                } else if (self.location === 'center stick') {
-                    return `It's made of glass and glowing in ${self.color}, illuminating the room.`;
-                } else {
-                    return `It's made of glass.`;
-                }
-            },
-            use: () => `You can try to move it to an other stick.`
-        })
-    };
+        access: 'not found',
+        name: ['disk', 'disks', fullName],
+        examine: (state) => {
+            const self = getItemsByName(state, fullName)[0] as Disk;
+            if (self == null) {
+                return `You don't have it.`;
+            } else if (self.location === 'center stick') {
+                return `It's made of glass and glowing in ${self.color}, illuminating the room.`;
+            } else {
+                return `It's made of glass.`;
+            }
+        },
+        use: () => `You can try to move it to an other stick.`
+    });
 }
 

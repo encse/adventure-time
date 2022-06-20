@@ -2,10 +2,15 @@ import {State, makeItem, Result, color} from '../game-defs';
 
 export const room = makeItem({
     name: 'room',
-    look: (state:State): Result => 
-        color(state) !== 'black' ? state.room.examine(state) :
-        !state.matches.used      ? `You don't see anything, but you have a {{box of matches}} in your {{pocket}}.` :
-                                   `Your eyes got used to the darkness already. But apart from the chaotic triggering of your neurons making some fake sparkles you don't see a thing.`,
+    look: (state:State): Result =>  {
+        if (color(state) !== 'black') {
+            return state.room.examine(state);
+        } else if (!state.matches.used) {
+            return `You don't see anything, but you have a {{box of matches}} in your {{pocket}}.`;
+        } else {
+            return `Your eyes got used to the darkness already. But apart from the chaotic triggering of your neurons making some fake sparkles you don't see a thing.`;
+        }
+    },
     examine: (state: State): Result =>  {
         let stRoom = '';
         let stWall = '';

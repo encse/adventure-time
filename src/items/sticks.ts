@@ -12,35 +12,40 @@ export const centerStick = makeItem({
     examine: () => `It's made of wood, about two spans long.`
 });
 
-export const missingStick ={
+export const missingStick = makeItem({
     used: false, 
-    ...makeItem({
-        name: ['stick', 'sticks', 'stick from the floor'],
-        access: 'not found',
-        examine: (state) => {
-            if (state.missingStick.used) {
-                return `The stick is stuck.`;
-            } else if (state.hole.access === 'available') {
-                return `The stick would fit into the hole in the installation.`
-            } else {
-                return `It's about two spans long. It's some kind of wood, based on its smell, it could be made of Elder.`;
-            }
-        },
-        use: (state) => {
-            if (state.missingStick.used) {
-                return `The stick is stuck.`;
-            } else if (state.hole.access === 'available') {
-                const msg = `You twist the stick into the hole of the installation like it was some IKEA furniture (an Ünstallation). It fits there perfectly, the whole thing starts to make sense now.`;
-                const upd: Partial<State> = {
-                    missingStick: {...state.missingStick, alias: ['stick', 'sticks', 'right stick'], used: true}
-                } 
-                return [msg, upd];
-            } else {
-                return lumos(state);
-            }
+    name: ['stick', 'sticks', 'stick from the floor'],
+    access: 'not found',
+    examine: (state) => {
+        if (state.missingStick.used) {
+            return `The stick is stuck.`;
+        } else if (state.hole.access === 'available') {
+            return `The stick would fit into the hole in the installation.`
+        } else {
+            return `It's about two spans long. It's some kind of wood, based on its smell, it could be made of Elder.`;
         }
-    })
-};
+    },
+    use: (state) => {
+        if (state.missingStick.used) {
+            return `The stick is stuck.`;
+        } else if (state.hole.access === 'available') {
+            const msg = `You twist the stick into the hole of the installation like it was some ` +
+                `IKEA furniture (an Ünstallation). It fits there perfectly, the whole thing starts to ` +
+                `make sense now.`;
+                
+            const upd: Partial<State> = {
+                missingStick: {
+                    ...state.missingStick, 
+                    alias: [...state.missingStick.alias, 'right stick'], 
+                    used: true
+                }
+            } 
+            return [msg, upd];
+        } else {
+            return lumos(state);
+        }
+    }
+});
 
 export function lumos(state: State) : string {
     if (color(state) !== 'black') {
