@@ -49,7 +49,6 @@ export const initialState: State = {
 
 export function findItemsByName(state: State, name: string): Item[] {
     return Object.values(state).filter(item =>
-        item.access === 'available' &&
-        [...item.alias, ...item.alias.map(x => 'the ' + x)].includes(name)
+        item.access === 'available' && item.alias.includes(name)
     );
 }

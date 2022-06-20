@@ -38,7 +38,7 @@ export type CommandResult = string | [string | string[], Partial<State>];
 
 function runCommand(command: string, state: State): CommandResult {
     const parts = command.trim().toLowerCase().split(' ').filter(x => x !== 'the');
-    let [verb, obj] = [parts[0], parts.slice(1).join(' ')];
+    let [verb, obj] = [parts[0].trim(), parts.slice(1).join(' ').trim()];
 
     if (verb === 'l') { verb = 'look'; }
     if (verb === 'h') { verb = 'help'; }

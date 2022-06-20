@@ -16,7 +16,8 @@ export const leftStick: Stick = makeItem({
     used: false, 
     name: ['stick', 'sticks', 'left stick'],
     access: 'not found',
-    examine: () => `It's made of wood, about two spans long.`
+    examine: () => `It's made of wood, about two spans long.`,
+    use: () => `The stick is stuck.`,
 });
 
 export const centerStick: Stick = makeItem({
@@ -24,7 +25,8 @@ export const centerStick: Stick = makeItem({
     used: false, 
     name: ['stick', 'sticks', 'middle stick', 'center stick'],
     access: 'not found',
-    examine: () => `It's made of wood, about two spans long.`
+    examine: () => `It's made of wood, about two spans long.`,
+    use: () => `The stick is stuck.`,
 });
 
 export const missingStick: Stick = makeItem({
