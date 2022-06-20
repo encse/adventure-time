@@ -38,6 +38,10 @@ export function move(state: State, obj: string): CommandResult {
         const what = parts[0].trim();
         let where = parts[1].trim();
 
+        if (where.startsWith('the ')) {
+            where = where.substring(4);
+        }
+
         if (where === 'left') {where = 'left stick';}
         if (where === 'right' && !state.missingStick.used ) {where = 'center stick';}
         if (where === 'right') {where = 'right stick';}

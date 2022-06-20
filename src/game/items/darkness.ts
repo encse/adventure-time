@@ -11,5 +11,5 @@ export const darkness = makeItem({
         }
     },
     look: (state) => state.darkness.examine(state),
-    use: () => `Luke, I am your father`,
+    use: () => `khhht PHHRRRR...`,
 });
