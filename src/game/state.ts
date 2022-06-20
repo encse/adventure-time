@@ -48,6 +48,9 @@ export const initialState: State = {
     secrets,
 };
 
-export function findItemsByName(state: State, name: string): Item<any>[] {
-    return Object.values(state).filter(item => item.access === 'available' && item.alias.includes(name));
+export function findItemsByName(state: State, name: string): Item[] {
+    return Object.values(state).filter(item => 
+        item.access === 'available' && 
+        [...item.alias, ...item.alias.map( x=> 'the ' + x )].includes(name)
+    );
 }

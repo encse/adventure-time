@@ -24,7 +24,7 @@ export async function gameLoop(io: Io) {
     while(true) {
         let res = runCommand(await io.readln(), state);
         let msg = ''
-        if (typeof(res) == 'string'){
+        if (typeof(res) == 'string') {
             msg = res;
         } else {
             state = { ...state, ...res[1] };
