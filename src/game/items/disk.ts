@@ -1,5 +1,5 @@
 import { Color } from "../../io/colors";
-import { Item, makeItem } from "../items";
+import { Item, makeItem } from "./items";
 import { findItemsByName } from "../state";
 
 export type DiskLocation = 'left stick' | 'center stick' | 'right stick';

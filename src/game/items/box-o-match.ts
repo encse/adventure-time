@@ -1,4 +1,4 @@
-import { Item, makeItem } from "../items";
+import { Item, makeItem } from "./items";
 import { State } from "../state";
 import { a } from "../../io/utils";
 import { roomColor } from "./room";

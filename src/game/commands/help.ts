@@ -1,4 +1,4 @@
-import { CommandResult } from "../game-loop";
+import { CommandResult } from "../loop";
 import { State } from "../state";
 
 export function help(state: State, obj: string): CommandResult {

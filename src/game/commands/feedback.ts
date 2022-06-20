@@ -1,5 +1,5 @@
-import { CommandResult } from "../game-loop";
-import { Item } from "../items";
+import { CommandResult } from "../loop";
+import { Item } from "../items/items";
 import { State } from "../state";
 
 export function disambiguate(items: Item[]) {

@@ -1,7 +1,7 @@
-import { a } from '../io/utils';
-import { CommandResult } from './game-loop';
-import { roomColor } from "./items/room";
-import { State } from './state';
+import { a } from '../../io/utils';
+import { CommandResult } from '../loop';
+import { roomColor } from "./room";
+import { State } from '../state';
 
 export type Item = {
     readonly name: string; 

@@ -1,4 +1,4 @@
-import { Item } from './items';
+import { Item } from './items/items';
 import { matches, Matches } from './items/box-o-match';
 import { darkness } from './items/darkness';
 import { Disk, largeDisk, mediumDisk, smallDisk } from './items/disk';

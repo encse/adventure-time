@@ -1,5 +1,5 @@
-import { CommandResult } from "../game-loop";
-import { Item, makeItem } from "../items";
+import { CommandResult } from "../loop";
+import { Item, makeItem } from "./items";
 import { State } from "../state";
 
 export type Secrets = Item & { konamiFound: boolean, iddqdFound: boolean }

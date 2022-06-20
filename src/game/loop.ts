@@ -10,9 +10,7 @@ import { konamiCode, konami, iddqd } from './items/secrets';
 import { lumos } from './items/sticks';
 import { initialState, State } from './state';
 
-export type CommandResult = string | [string | string[], Partial<State>];
-
-export async function gameLoop(io: Io){
+export async function gameLoop(io: Io) {
     let state = initialState;
 
     io.writeln(``);
@@ -36,9 +34,11 @@ export async function gameLoop(io: Io){
     }
 }
 
+export type CommandResult = string | [string | string[], Partial<State>];
+
 function runCommand(command: string, state: State): CommandResult {
     let verb = command.trim().split(' ')[0];
-    let obj = command.trim().split(' ').slice(1).join(' ');
+    let obj = command.trim().split(' ').slice(1).join(' ').trim();
 
     if (verb === 'l') { verb = 'look'; }
     if (verb === 'h') { verb = 'help'; }

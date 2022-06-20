@@ -1,5 +1,5 @@
-import { CommandResult } from "../game-loop";
-import { makeItem } from "../items";
+import { CommandResult } from "../loop";
+import { makeItem } from "./items";
 import { State } from "../state";
 
 export const pocket = makeItem({

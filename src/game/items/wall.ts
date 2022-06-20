@@ -1,5 +1,5 @@
 import { colorize } from "../../io/colors";
-import { makeItem } from "../items";
+import { makeItem } from "./items";
 import { State } from "../state";
 import { roomColor } from "./room";
 

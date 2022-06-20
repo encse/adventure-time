@@ -1,6 +1,7 @@
-import { Item, makeItem } from "../items";
+import { Item, makeItem } from "./items";
 import { State } from "../state";
 import { roomColor } from "./room";
+import { CommandResult } from "../loop";
 
 export type Stick = Item & {used: boolean};
 
@@ -53,7 +54,7 @@ export const missingStick: Stick = makeItem({
     }
 });
 
-export function lumos(state: State) : string {
+export function lumos(state: State) : CommandResult {
     if (roomColor(state) !== 'black') {
         return `There is enough light here.`
     } else if (state.missingStick.access === 'available' && !state.missingStick.used) {

@@ -1,4 +1,4 @@
-import { CommandResult } from "../game-loop";
+import { CommandResult } from "../loop";
 import { findItemsByName, State } from "../state";
 import { dontUnderstand, disambiguate } from "./feedback";
 

@@ -1,6 +1,6 @@
 import { State } from "../state";
 import { roomColor } from "../items/room";
-import { CommandResult } from "../game-loop";
+import { CommandResult } from "../loop";
 
 export function hello(state: State, obj: string): CommandResult {
     if (roomColor(state) === 'black') {

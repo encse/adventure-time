@@ -1,9 +1,9 @@
 import { colorize } from "../../io/colors";
-import { makeItem, Item } from "../items";
+import { makeItem, Item } from "./items";
 import { State, findItemsByName } from "../state";
 import { disambiguate } from "../commands/feedback";
 import { Disk, DiskLocation } from "./disk";
-import { CommandResult } from "../game-loop";
+import { CommandResult } from "../loop";
 
 export const installation = makeItem({
     name: ['weird installation', 'installation'],
