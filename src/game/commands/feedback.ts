@@ -1,4 +1,4 @@
-import { Item, Result, State } from "../game-defs";
+import { Item, Result, State } from "../defs";
 
 export function disambiguate(items: Item[]) {
     let msg = `Which one do you want?\n`;

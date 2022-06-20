@@ -1,4 +1,4 @@
-import { makeItem } from "../game-defs";
+import { makeItem } from "../defs";
 
 export const hole =  makeItem({
     name: 'hole',

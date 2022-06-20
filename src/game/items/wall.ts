@@ -1,10 +1,11 @@
-import { colorize } from "../colors";
-import { color, makeItem, State } from "../game-defs";
+import { colorize } from "../../io/colors";
+import { makeItem, State } from "../defs";
+import { roomColor } from "./room";
 
 export const wall = makeItem({
     name: 'wall', 
     examine: (state) => {
-        if (color(state) === 'black') {
+        if (roomColor(state) === 'black') {
             return `It's a wall, made of concrete.`;
         }
         return `Somebody painted a message on the wall. It says:` + describeWall(state);
@@ -39,7 +40,7 @@ function describeWall(state: State): string {
     
     let res = '';
     for(let line of lines) {
-        res += '>>';
+        res += '<c>';
         for (let ch of line) {
             const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()];
             if (disk.location === 'center stick') {
@@ -48,7 +49,7 @@ function describeWall(state: State): string {
                 res += ' ';
             }
         } 
-        res += '<<\n';
+        res += '</c>\n';
     }
     return res;
 }

@@ -1,5 +1,5 @@
-import { Color } from "../colors";
-import { Disk, getItemsByName, makeItem } from "../game-defs";
+import { Color } from "../../io/colors";
+import { Disk, findItemsByName, makeItem } from "../defs";
 
 export const smallDisk = makeDisk('small', 'red');
 export const mediumDisk = makeDisk('medium', 'green');
@@ -13,7 +13,7 @@ function makeDisk(shortName: string, color: Color): Disk {
         access: 'not found',
         name: ['disk', 'disks', fullName],
         examine: (state) => {
-            const self = getItemsByName(state, fullName)[0] as Disk;
+            const self = findItemsByName(state, fullName)[0] as Disk;
             if (self == null) {
                 return `You don't have it.`;
             } else if (self.location === 'center stick') {

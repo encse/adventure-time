@@ -1,4 +1,4 @@
-import { makeItem, Result, Secrets, State } from "../game-defs";
+import { makeItem, Result, Secrets, State } from "../defs";
 
 export const konamiCode = '\u001b[A\u001b[A\u001b[B\u001b[B\u001b[D\u001b[C\u001b[D\u001b[Cba';
 

@@ -1,12 +1,15 @@
-import { color, makeItem, State } from "../game-defs";
+import { makeItem, State } from "../defs";
+import { roomColor } from "./room";
 
 export const leftStick = makeItem({
+    used: false, 
     name: ['stick', 'sticks', 'left stick'],
     access: 'not found',
     examine: () => `It's made of wood, about two spans long.`
 });
 
 export const centerStick = makeItem({
+    used: false, 
     name: ['stick', 'sticks', 'middle stick', 'center stick'],
     access: 'not found',
     examine: () => `It's made of wood, about two spans long.`
@@ -32,7 +35,7 @@ export const missingStick = makeItem({
             const msg = `You twist the stick into the hole of the installation like it was some ` +
                 `IKEA furniture (an Ünstallation). It fits there perfectly, the whole thing starts to ` +
                 `make sense now.`;
-                
+
             const upd: Partial<State> = {
                 missingStick: {
                     ...state.missingStick, 
@@ -48,7 +51,7 @@ export const missingStick = makeItem({
 });
 
 export function lumos(state: State) : string {
-    if (color(state) !== 'black') {
+    if (roomColor(state) !== 'black') {
         return `There is enough light here.`
     } else if (state.missingStick.access === 'available' && !state.missingStick.used) {
         return (

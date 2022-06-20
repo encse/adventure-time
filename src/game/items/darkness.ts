@@ -1,12 +1,13 @@
-import { makeItem, color } from "../game-defs";
+import { makeItem } from "../defs";
+import { roomColor } from "./room";
 
 export const darkness = makeItem({
     name: 'darkness',
     examine: (state) => {
-        if (color(state) === 'black') {
+        if (roomColor(state) === 'black') {
             return `It's pitch dark. You wish you had a brass lantern.`;
         } else {
-            return `The room is lit by ${color(state)} colors`;
+            return `The room is lit by ${roomColor(state)} colors`;
         }
     },
     look: (state) => state.darkness.examine(state),

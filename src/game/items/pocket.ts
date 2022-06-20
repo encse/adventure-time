@@ -1,4 +1,4 @@
-import { makeItem, Result, State } from "../game-defs";
+import { makeItem, Result, State } from "../defs";
 
 export const pocket = makeItem({
     name: 'pocket', 
@@ -9,7 +9,7 @@ export const pocket = makeItem({
         } 
 
         if (state.missingStick.access === 'available' && !state.missingStick.used) {
-            st.push(`You have a stick. `);
+            st.push(`- You have a stick. `);
         }
 
         return st.join('\n');

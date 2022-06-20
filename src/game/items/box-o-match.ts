@@ -1,5 +1,6 @@
-import { makeItem, State, color } from "../game-defs";
-import { a } from "../textUtils";
+import { makeItem, State } from "../defs";
+import { a } from "../../io/utils";
+import { roomColor } from "./room";
 
 export const matches = makeItem({
     used: false,
@@ -19,11 +20,11 @@ export const matches = makeItem({
         } 
 
         let msg = '';
-        if (color(state) !== 'black') {
+        if (roomColor(state) !== 'black') {
             msg = `Fwoosh... ouch. You drop your last match to the floor.`;
         } else {
             msg = `Fwoosh... sudden light illuminates the place for a moment. ` +
-                `There is {{${a(state.installation.name)}}} in front of you, ` +
+                `There is <i>${a(state.installation.name)}</i> in front of you, ` +
                 `but you don't have time to observe it well. ` +
                 `The fire goes out quickly and you stay alone in the darkness again.`;
         }

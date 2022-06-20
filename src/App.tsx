@@ -1,12 +1,13 @@
 import React from 'react';
 import './App.css';
-import {main} from './foo';
+import { gameLoop } from './game/loop';
+import { TermIo } from './io/io';
 
 function App() {
   
     const onRefChange = React.useCallback((node:HTMLElement | null) => {
         if (node != null) { 
-            main(node);
+            gameLoop(new TermIo(node));
         }
       }, []); 
     

@@ -1,9 +1,6 @@
 import c from 'ansi-colors';
 import stringWidth from 'string-width';
 
-
-
-
 export function lineBreak(text: string, width: number): string {
     let lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
@@ -38,22 +35,20 @@ export function lineBreak(text: string, width: number): string {
     return lines.join('\n');
 }
 
-export function centerText(text: string, width: number): string {
-    const realLength = stringWidth(text);
-    if (width > realLength)
-        return  ' '.repeat((width - realLength) / 2) + text;
-    else
-        return text;
-}
 export function center(text: string, width: number): string {
-    return text.replace(new RegExp('\\>\\>(.*)\\<\\<', 'g'), (_, part) => {
-        return centerText(part, width);
+    return text.replace(/<c>(.*)<\/c>/g, (_, part) => {
+        const realLength = stringWidth(part);
+        if (width > realLength)
+            return  ' '.repeat((width - realLength) / 2) + part;
+        else
+            return part;
     });
 }
 
 export function highlight(text: string): string {
     c.enabled = true;
-    text = text.replace(new RegExp('\\{\\{([^}]*)\\}\\}', 'g'), c.italic('$1'));
+    // text = text.replace(new RegExp('\\{\\{([^}]*)\\}\\}', 'g'), c.italic('$1'));
+    text = text.replace(/<i>([^<]*)<\/i>/g, c.italic('$1'));
     return text;
 }
 

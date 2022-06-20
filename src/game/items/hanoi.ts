@@ -1,5 +1,5 @@
-import { colorize } from "../colors";
-import { makeItem, State, Result, Disk, getItemsByName, Item, DiskLocation } from "../game-defs";
+import { colorize } from "../../io/colors";
+import { makeItem, State, Result, Disk, findItemsByName, Item, DiskLocation } from "../defs";
 import { disambiguate } from "../commands/feedback";
 
 export const installation = makeItem({
@@ -8,8 +8,8 @@ export const installation = makeItem({
     examine: (state: State): Result => {
 
         const msg = state.missingStick.used ?
-            `It's a tower of Hanoi game with a {{small}}, a {{medium}} and a {{large disk}}.` :
-            `The installation consists of a {{small}}, a {{medium}} and a {{large disk}} on two {{sticks}}. There is a {{hole}} for a third stick to the right.`;
+            `It's a tower of Hanoi game with a <i>small</i>, a <i>medium</i> and a <i>large disk</i>.` :
+            `The installation consists of a <i>small</i>, a <i>medium</i> and a <i>large disk</i> on two <i>sticks</i>. There is a <i>hole</i> for a third stick to the right.`;
 
         const upd: Partial<State> = {
             hole:        {...state.hole, access: 'available'},
@@ -26,7 +26,7 @@ export const installation = makeItem({
 });
 
 export function move(state: State, obj: string): Result {
-    if (getItemsByName(state, 'disk').length === 0) {
+    if (findItemsByName(state, 'disk').length === 0) {
         return `You have nothing to move.`;
     } else if (obj.indexOf(' to ') < 0) {
         return 'Try "move <some> disk to <position>".';
@@ -41,8 +41,8 @@ export function move(state: State, obj: string): Result {
         if (where === 'center') {where = 'center stick';}
         if (where === 'middle') {where = 'center stick';}
        
-        const objAs = getItemsByName(state, what);
-        const objBs = getItemsByName(state, where);
+        const objAs = findItemsByName(state, what);
+        const objBs = findItemsByName(state, where);
         const disk = objAs[0] as Disk;
         const toStick = objBs[0];
 
@@ -52,14 +52,14 @@ export function move(state: State, obj: string): Result {
             return disambiguate(objAs);
         } else if (objBs.length > 1) {
             return disambiguate(objBs);
-        } else if (toStick === getItemsByName(state, disk.location)[0]) {
+        } else if (toStick === findItemsByName(state, disk.location)[0]) {
             return `It's already there.`;
         } else if (!isTopDisk(disk, state)) {
             return `The disks are heavy and you don't want to break them, try moving the disk on the top of the stick first. `;
         } else if (!allowedPositions(disk, state).includes(toStick)) {
             return `You are not a Feng shui expert, but that disk would not look right there.`;
         } else {
-            const fromStick = getItemsByName(state, disk.location)[0];
+            const fromStick = findItemsByName(state, disk.location)[0];
         
             const upd: Partial<State> = 
                 disk === state.smallDisk ?  {smallDisk: {...state.smallDisk, location: fullName(toStick) as DiskLocation}} :
@@ -156,7 +156,7 @@ function allowedPositions(disk: Disk, state: State):  Item[] {
         targetLocations = targetLocations.filter(x => x !== state.smallDisk.location && x !== state.mediumDisk.location && x !== state.largeDisk.location);
     }
 
-    return targetLocations.map(location => getItemsByName(state, location)[0]);
+    return targetLocations.map(location => findItemsByName(state, location)[0]);
 }
 
 function isTopDisk(disk: Disk, state: State) {
