@@ -3,7 +3,7 @@ import { State } from "../state";
 import { a } from "../../io/utils";
 import { roomColor } from "./room";
 
-export type Matches = Item & {used: boolean};
+export type Matches = Item<{used: boolean}>;
 
 export const matches: Matches = makeItem({
     used: false,

@@ -2,7 +2,7 @@ import { CommandResult } from "../loop";
 import { Item, makeItem } from "./items";
 import { State } from "../state";
 
-export type Secrets = Item & { konamiFound: boolean, iddqdFound: boolean }
+export type Secrets = Item<{ konamiFound: boolean, iddqdFound: boolean }>;
 
 export const konamiCode = '\u001b[A\u001b[A\u001b[B\u001b[B\u001b[D\u001b[C\u001b[D\u001b[Cba';
 

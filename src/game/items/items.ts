@@ -3,7 +3,7 @@ import { CommandResult } from '../loop';
 import { roomColor } from "./room";
 import { State } from '../state';
 
-export type Item = {
+export type Item<T={}> =  T & {
     readonly name: string; 
     readonly access: 'available' | 'not found'; 
     readonly alias: readonly string[];
@@ -20,7 +20,7 @@ export type ItemProps = {
     use?: (state: State) => CommandResult, 
 };
 
-export function makeItem<T>(props: ItemProps & T) : Item & T {
+export function makeItem<T>(props: ItemProps & T) : Item<T> {
     let name  = typeof(props.name) == 'string' ? props.name : props.name[0];
     let examine = props.examine ?? (() => `It's just ${a(name)}`);
 

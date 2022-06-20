@@ -3,7 +3,7 @@ import { State } from "../state";
 import { roomColor } from "./room";
 import { CommandResult } from "../loop";
 
-export type Stick = Item & {used: boolean};
+export type Stick = Item<{used: boolean}>;
 
 export const leftStick: Stick = makeItem({
     used: false, 

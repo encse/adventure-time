@@ -27,7 +27,7 @@ export type State = {
 
     readonly room: Item;
     readonly wall: Item;
-    readonly pocket: Item;
+    readonly pocket: Item
     readonly secrets: Secrets;
 };
 
@@ -48,6 +48,6 @@ export const initialState: State = {
     secrets,
 };
 
-export function findItemsByName(state: State, name: string): Item[] {
+export function findItemsByName(state: State, name: string): Item<any>[] {
     return Object.values(state).filter(item => item.access === 'available' && item.alias.includes(name));
 }
