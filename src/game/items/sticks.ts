@@ -2,10 +2,17 @@ import { Item, makeItem } from "./items";
 import { State } from "../state";
 import { roomColor } from "./room";
 import { CommandResult } from "../loop";
+import { DiskLocation } from "./disk";
 
-export type Stick = Item<{used: boolean}>;
+
+export type Stick = Item<{location: DiskLocation, used: boolean}>;
+
+export function isStick(item: Item): item is Stick {
+    return item != null && item.name === 'stick';
+}
 
 export const leftStick: Stick = makeItem({
+    location: to<DiskLocation>('left stick'),
     used: false, 
     name: ['stick', 'sticks', 'left stick'],
     access: 'not found',
@@ -13,6 +20,7 @@ export const leftStick: Stick = makeItem({
 });
 
 export const centerStick: Stick = makeItem({
+    location: to<DiskLocation>('center stick'),
     used: false, 
     name: ['stick', 'sticks', 'middle stick', 'center stick'],
     access: 'not found',
@@ -20,6 +28,7 @@ export const centerStick: Stick = makeItem({
 });
 
 export const missingStick: Stick = makeItem({
+    location: to<DiskLocation>('right stick'),
     used: false, 
     name: ['stick', 'sticks', 'stick from the floor'],
     access: 'not found',
@@ -53,6 +62,8 @@ export const missingStick: Stick = makeItem({
         }
     }
 });
+
+export function to<T>(t: T): T {return t;}
 
 export function lumos(state: State) : CommandResult {
     if (roomColor(state) !== 'black') {

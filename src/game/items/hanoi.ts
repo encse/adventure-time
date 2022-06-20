@@ -2,8 +2,9 @@ import { colorize } from "../../io/colors";
 import { makeItem, Item } from "./items";
 import { State, findItemsByName } from "../state";
 import { disambiguate } from "../commands/feedback";
-import { Disk, DiskLocation } from "./disk";
+import { Disk, isDisk } from "./disk";
 import { CommandResult } from "../loop";
+import { isStick, Stick } from "./sticks";
 
 export const installation = makeItem({
     name: ['weird installation', 'installation'],
@@ -50,32 +51,33 @@ export function move(state: State, obj: string): CommandResult {
        
         const objAs = findItemsByName(state, what);
         const objBs = findItemsByName(state, where);
-        const disk = objAs[0] as Disk;
+        const disk = objAs[0];
         const toStick = objBs[0];
 
-        if (disk == null || disk.name !== 'disk' || toStick == null || toStick.name !== 'stick') {
+        if (!isDisk(disk) || !isStick(toStick)) {
             return `Try "move <some> disk to <position>".`
         } else if (objAs.length > 1) {
             return disambiguate(objAs);
         } else if (objBs.length > 1) {
             return disambiguate(objBs);
-        } else if (toStick === findItemsByName(state, disk.location)[0]) {
+        } else if (toStick.location === disk.location) {
             return `It's already there.`;
         } else if (!isTopDisk(disk, state)) {
             return `The disks are heavy and you don't want to break them, try moving the disk on the top of the stick first. `;
         } else if (!allowedPositions(disk, state).includes(toStick)) {
             return `You are not a Feng shui expert, but that disk would not look right there.`;
         } else {
-            const fromStick = findItemsByName(state, disk.location)[0];
+
+            const from = disk.location
         
             const upd: Partial<State> = 
-                disk === state.smallDisk ?  {smallDisk: {...state.smallDisk, location: fullName(toStick) as DiskLocation}} :
-                disk === state.mediumDisk ? {mediumDisk: {...state.mediumDisk, location: fullName(toStick) as DiskLocation}} :
-                                            {largeDisk: {...state.largeDisk, location: fullName(toStick) as DiskLocation}};
+                disk === state.smallDisk ?  {smallDisk: {...state.smallDisk, location: toStick.location}} :
+                disk === state.mediumDisk ? {mediumDisk: {...state.mediumDisk, location: toStick.location}} :
+                                            {largeDisk: {...state.largeDisk, location: toStick.location}};
 
-            const stMove = `You carefully lift the disk and place it on the ${fullName(toStick)}.`;
+            const stMove = `You carefully lift the disk and place it on the ${toStick.alias[toStick.alias.length-1]}.`;
             const stAction =
-                fromStick === state.centerStick ? `As soon as you lift the disk, it stops glowing.` :
+                from === 'center stick' ? `As soon as you lift the disk, it stops glowing.` :
                 toStick === state.centerStick ? `The disk starts glowing in ${disk.color}, illuminating the room.` :
                 '';
 
@@ -145,25 +147,28 @@ function describeHanoi(state: State): string {
 }
 
 function allowedPositions(disk: Disk, state: State):  Item[] {
-    let targetLocations: string[] = state.missingStick.used ? 
-        ['left stick', 'center stick', 'right stick'] : 
-        ['left stick', 'center stick'];
 
-    if (disk === state.smallDisk) {
-        targetLocations = targetLocations.filter(x => x !== state.smallDisk.location);
-    } else if (disk === state.mediumDisk && state.smallDisk.location === state.mediumDisk.location) {
-        targetLocations = [];
-    } else if (disk === state.mediumDisk) {
-        targetLocations = targetLocations.filter(x => x !== state.smallDisk.location && x !== state.mediumDisk.location);
-    } else if (disk === state.largeDisk && state.largeDisk.location === state.mediumDisk.location) {
-        targetLocations = [];
-    } else if (disk === state.largeDisk && state.largeDisk.location === state.smallDisk.location) {
-        targetLocations = [];
-    } else if (disk === state.largeDisk) {
-        targetLocations = targetLocations.filter(x => x !== state.smallDisk.location && x !== state.mediumDisk.location && x !== state.largeDisk.location);
+    if (!isTopDisk(disk, state)) {
+        return [];
     }
 
-    return targetLocations.map(location => findItemsByName(state, location)[0]);
+    let targetLocations: Stick[] = state.missingStick.used ? 
+        [state.leftStick, state.centerStick, state.missingStick] : 
+        [state.leftStick, state.centerStick];
+
+    if (disk === state.smallDisk || disk === state.mediumDisk || disk === state.largeDisk) {
+        targetLocations = targetLocations.filter(x => x.location !== state.smallDisk.location);
+    }  
+    
+    if (disk === state.mediumDisk || disk === state.largeDisk) {
+        targetLocations = targetLocations.filter(x => x.location !== state.mediumDisk.location);
+    } 
+    
+    if (disk === state.largeDisk) {
+        targetLocations = targetLocations.filter(x => x.location !== state.largeDisk.location);
+    }
+
+    return targetLocations;
 }
 
 function isTopDisk(disk: Disk, state: State) {
@@ -174,8 +179,4 @@ function isTopDisk(disk: Disk, state: State) {
     } else  {
         return state.smallDisk.location !== disk.location && state.mediumDisk.location !== disk.location;
     }
-}
-
-function fullName(item: Item) {
-    return item.alias[item.alias.length - 1];
 }
