@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { gameLoop } from './game/loop';
+import { gameLoop } from './game/game-loop';
 import { TermIo } from './io/io';
 
 function App() {

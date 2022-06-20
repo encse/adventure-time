@@ -1,9 +1,11 @@
 import { Color } from '../../io/colors';
-import {State, makeItem, Result} from '../defs';
+import { CommandResult } from '../game-loop';
+import {makeItem} from '../items';
+import { State } from '../state';
 
 export const room = makeItem({
     name: 'room',
-    look: (state:State): Result =>  {
+    look: (state:State): CommandResult =>  {
         if (roomColor(state) !== 'black') {
             return state.room.examine(state);
         } else if (!state.matches.used) {
@@ -12,7 +14,7 @@ export const room = makeItem({
             return `Your eyes got used to the darkness already. But apart from the chaotic triggering of your neurons making some fake sparkles you don't see a thing.`;
         }
     },
-    examine: (state: State): Result =>  {
+    examine: (state: State): CommandResult =>  {
         let stRoom = '';
         let stWall = '';
         let stStick = '';

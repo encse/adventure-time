@@ -1,4 +1,6 @@
-import { Item, Result, State } from "../defs";
+import { CommandResult } from "../game-loop";
+import { Item } from "../items";
+import { State } from "../state";
 
 export function disambiguate(items: Item[]) {
     let msg = `Which one do you want?\n`;
@@ -6,6 +8,6 @@ export function disambiguate(items: Item[]) {
     return msg + list + '\n';
 }
 
-export function dontUnderstand(state: State, obj: string): Result {
+export function dontUnderstand(state: State, obj: string): CommandResult {
     return `I don't understand "${obj}".`;
 }

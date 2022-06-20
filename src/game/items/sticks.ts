@@ -1,21 +1,24 @@
-import { makeItem, State } from "../defs";
+import { Item, makeItem } from "../items";
+import { State } from "../state";
 import { roomColor } from "./room";
 
-export const leftStick = makeItem({
+export type Stick = Item & {used: boolean};
+
+export const leftStick: Stick = makeItem({
     used: false, 
     name: ['stick', 'sticks', 'left stick'],
     access: 'not found',
     examine: () => `It's made of wood, about two spans long.`
 });
 
-export const centerStick = makeItem({
+export const centerStick: Stick = makeItem({
     used: false, 
     name: ['stick', 'sticks', 'middle stick', 'center stick'],
     access: 'not found',
     examine: () => `It's made of wood, about two spans long.`
 });
 
-export const missingStick = makeItem({
+export const missingStick: Stick = makeItem({
     used: false, 
     name: ['stick', 'sticks', 'stick from the floor'],
     access: 'not found',

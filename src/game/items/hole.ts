@@ -1,4 +1,4 @@
-import { makeItem } from "../defs";
+import { makeItem } from "../items";
 
 export const hole =  makeItem({
     name: 'hole',

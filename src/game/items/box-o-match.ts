@@ -1,8 +1,11 @@
-import { makeItem, State } from "../defs";
+import { Item, makeItem } from "../items";
+import { State } from "../state";
 import { a } from "../../io/utils";
 import { roomColor } from "./room";
 
-export const matches = makeItem({
+export type Matches = Item & {used: boolean};
+
+export const matches: Matches = makeItem({
     used: false,
     name: ['matches', 'match', 'box of matches'],
     examine: (state) =>  {

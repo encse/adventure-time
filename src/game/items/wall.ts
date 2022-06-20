@@ -1,5 +1,6 @@
 import { colorize } from "../../io/colors";
-import { makeItem, State } from "../defs";
+import { makeItem } from "../items";
+import { State } from "../state";
 import { roomColor } from "./room";
 
 export const wall = makeItem({

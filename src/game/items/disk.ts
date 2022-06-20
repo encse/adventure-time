@@ -1,5 +1,9 @@
 import { Color } from "../../io/colors";
-import { Disk, findItemsByName, makeItem } from "../defs";
+import { Item, makeItem } from "../items";
+import { findItemsByName } from "../state";
+
+export type DiskLocation = 'left stick' | 'center stick' | 'right stick';
+export type Disk = Item & {location: DiskLocation, color: Color};
 
 export const smallDisk = makeDisk('small', 'red');
 export const mediumDisk = makeDisk('medium', 'green');

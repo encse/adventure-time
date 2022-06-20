@@ -1,7 +1,8 @@
-import { findItemsByName, Result, State } from "../defs";
+import { CommandResult } from "../game-loop";
+import { findItemsByName, State } from "../state";
 import { dontUnderstand, disambiguate } from "./feedback";
 
-export function examine(state: State, obj: string): Result {
+export function examine(state: State, obj: string): CommandResult {
     if (obj === '') {
         return state.room.examine(state);
     } else {

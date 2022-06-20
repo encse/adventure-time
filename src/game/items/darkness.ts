@@ -1,4 +1,4 @@
-import { makeItem } from "../defs";
+import { makeItem } from "../items";
 import { roomColor } from "./room";
 
 export const darkness = makeItem({

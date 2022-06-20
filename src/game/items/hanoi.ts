@@ -1,11 +1,14 @@
 import { colorize } from "../../io/colors";
-import { makeItem, State, Result, Disk, findItemsByName, Item, DiskLocation } from "../defs";
+import { makeItem, Item } from "../items";
+import { State, findItemsByName } from "../state";
 import { disambiguate } from "../commands/feedback";
+import { Disk, DiskLocation } from "./disk";
+import { CommandResult } from "../game-loop";
 
 export const installation = makeItem({
     name: ['weird installation', 'installation'],
     access: 'not found',
-    examine: (state: State): Result => {
+    examine: (state: State): CommandResult => {
 
         const msg = state.missingStick.used ?
             `It's a tower of Hanoi game with a <i>small</i>, a <i>medium</i> and a <i>large disk</i>.` :
@@ -25,7 +28,7 @@ export const installation = makeItem({
     }
 });
 
-export function move(state: State, obj: string): Result {
+export function move(state: State, obj: string): CommandResult {
     if (findItemsByName(state, 'disk').length === 0) {
         return `You have nothing to move.`;
     } else if (obj.indexOf(' to ') < 0) {
