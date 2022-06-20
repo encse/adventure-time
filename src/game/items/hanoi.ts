@@ -16,14 +16,14 @@ export const installation = makeItem({
             `The installation consists of a <i>small</i>, a <i>medium</i> and a <i>large disk</i> on two <i>sticks</i>. There is a <i>hole</i> for a third stick to the right.`;
 
         const upd: Partial<State> = {
-            hole:        {...state.hole, access: 'available'},
+            hole: { ...state.hole, access: 'available' },
 
-            leftStick:   {...state.leftStick,  access: 'available'},
-            centerStick: {...state.centerStick,  access: 'available'},
-            
-            smallDisk:   {...state.smallDisk,  access: 'available'},
-            mediumDisk:  {...state.mediumDisk,  access: 'available'},
-            largeDisk:   {...state.largeDisk,  access: 'available'},
+            leftStick: { ...state.leftStick, access: 'available' },
+            centerStick: { ...state.centerStick, access: 'available' },
+
+            smallDisk: { ...state.smallDisk, access: 'available' },
+            mediumDisk: { ...state.mediumDisk, access: 'available' },
+            largeDisk: { ...state.largeDisk, access: 'available' },
         };
         return [msg + describeHanoi(state), upd];
     }
@@ -36,19 +36,14 @@ export function move(state: State, obj: string): CommandResult {
         return 'Try "move <some> disk to <position>".';
     } else {
         const parts = obj.split(' to ');
-        const what = parts[0].trim();
-        let where = parts[1].trim();
+        let [what, where] = [parts[0].trim(), parts[1].trim()];
 
-        if (where.startsWith('the ')) {
-            where = where.substring(4);
-        }
+        if (where === 'left') { where = 'left stick'; }
+        if (where === 'right' && !state.missingStick.used) { where = 'center stick'; }
+        if (where === 'right') { where = 'right stick'; }
+        if (where === 'center') { where = 'center stick'; }
+        if (where === 'middle') { where = 'center stick'; }
 
-        if (where === 'left') {where = 'left stick';}
-        if (where === 'right' && !state.missingStick.used ) {where = 'center stick';}
-        if (where === 'right') {where = 'right stick';}
-        if (where === 'center') {where = 'center stick';}
-        if (where === 'middle') {where = 'center stick';}
-       
         const objAs = findItemsByName(state, what);
         const objBs = findItemsByName(state, where);
         const disk = objAs[0];
@@ -69,19 +64,19 @@ export function move(state: State, obj: string): CommandResult {
         } else {
 
             const from = disk.location
-        
-            const upd: Partial<State> = 
-                disk === state.smallDisk ?  {smallDisk: {...state.smallDisk, location: toStick.location}} :
-                disk === state.mediumDisk ? {mediumDisk: {...state.mediumDisk, location: toStick.location}} :
-                                            {largeDisk: {...state.largeDisk, location: toStick.location}};
 
-            const stMove = `You carefully lift the disk and place it on the ${toStick.alias[toStick.alias.length-1]}.`;
+            const upd: Partial<State> =
+                disk === state.smallDisk ? { smallDisk: { ...state.smallDisk, location: toStick.location } } :
+                disk === state.mediumDisk ? { mediumDisk: { ...state.mediumDisk, location: toStick.location } } :
+                { largeDisk: { ...state.largeDisk, location: toStick.location } };
+
+            const stMove = `You carefully lift the disk and place it on the ${toStick.alias[toStick.alias.length - 1]}.`;
             const stAction =
                 from === 'center stick' ? `As soon as you lift the disk, it stops glowing.` :
                 toStick === state.centerStick ? `The disk starts glowing in ${disk.color}, illuminating the room.` :
                 '';
 
-            state = {...state, ...upd};
+            state = { ...state, ...upd };
             return [[stMove, stAction, describeHanoi(state)], state];
         }
     }
@@ -92,15 +87,15 @@ function describeHanoi(state: State): string {
     const empty = colorize('    |    ', 'grey');
 
     const nonLitDisks = new Map<Disk, string>([
-        [state.smallDisk,  colorize('  [...]  ', 'grey')],
+        [state.smallDisk, colorize('  [...]  ', 'grey')],
         [state.mediumDisk, colorize(' [.....] ', 'grey')],
-        [state.largeDisk,  colorize('[.......]', 'grey')],
+        [state.largeDisk, colorize('[.......]', 'grey')],
     ])
 
     const litDisks = new Map<Disk, string>([
-        [state.smallDisk,  colorize('  [***]  ', state.smallDisk.color)],
+        [state.smallDisk, colorize('  [***]  ', state.smallDisk.color)],
         [state.mediumDisk, colorize(' [*****] ', state.mediumDisk.color)],
-        [state.largeDisk,  colorize('[*******]', state.largeDisk.color)],
+        [state.largeDisk, colorize('[*******]', state.largeDisk.color)],
     ])
 
     const rowByStick = {
@@ -115,7 +110,7 @@ function describeHanoi(state: State): string {
         'right stick': 2
     }
 
-    let items: string[][]= [];
+    let items: string[][] = [];
 
     for (let row = 0; row < 4; row++) {
         items[row] = []
@@ -128,42 +123,42 @@ function describeHanoi(state: State): string {
         }
     }
 
-    for (let disk of [state.largeDisk, state.mediumDisk, state.smallDisk]){
-        items[rowByStick[disk.location]--][colByStick[disk.location]] = 
+    for (let disk of [state.largeDisk, state.mediumDisk, state.smallDisk]) {
+        items[rowByStick[disk.location]--][colByStick[disk.location]] =
             disk.location === 'center stick' ? litDisks.get(disk)! : nonLitDisks.get(disk)!
     }
 
     let res = `\n\n`;
     for (let row = 0; row < 4; row++) {
-        res += '  '+ items[row].join('  ') + '\n';
+        res += '  ' + items[row].join('  ') + '\n';
     }
 
-    if(!state.missingStick.used){
+    if (!state.missingStick.used) {
         res += colorize(` =====+==========+==========-=====\n`, 'grey');
-    }  else {
+    } else {
         res += colorize(` =====+==========+==========+=====\n`, 'grey');
     }
     return res;
 }
 
-function allowedPositions(disk: Disk, state: State):  Item[] {
+function allowedPositions(disk: Disk, state: State): Item[] {
 
     if (!isTopDisk(disk, state)) {
         return [];
     }
 
-    let targetLocations: Stick[] = state.missingStick.used ? 
-        [state.leftStick, state.centerStick, state.missingStick] : 
+    let targetLocations: Stick[] = state.missingStick.used ?
+        [state.leftStick, state.centerStick, state.missingStick] :
         [state.leftStick, state.centerStick];
 
     if (disk === state.smallDisk || disk === state.mediumDisk || disk === state.largeDisk) {
         targetLocations = targetLocations.filter(x => x.location !== state.smallDisk.location);
-    }  
-    
+    }
+
     if (disk === state.mediumDisk || disk === state.largeDisk) {
         targetLocations = targetLocations.filter(x => x.location !== state.mediumDisk.location);
-    } 
-    
+    }
+
     if (disk === state.largeDisk) {
         targetLocations = targetLocations.filter(x => x.location !== state.largeDisk.location);
     }
@@ -176,7 +171,7 @@ function isTopDisk(disk: Disk, state: State) {
         return true;
     } else if (disk === state.mediumDisk) {
         return state.smallDisk.location !== disk.location;
-    } else  {
+    } else {
         return state.smallDisk.location !== disk.location && state.mediumDisk.location !== disk.location;
     }
 }

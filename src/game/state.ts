@@ -10,7 +10,6 @@ import { secrets, Secrets } from './items/secrets';
 import { centerStick, leftStick, missingStick, Stick } from './items/sticks';
 import { wall } from './items/wall';
 
-
 export type State = {
     readonly matches: Matches;
     readonly darkness: Item;
@@ -49,8 +48,8 @@ export const initialState: State = {
 };
 
 export function findItemsByName(state: State, name: string): Item[] {
-    return Object.values(state).filter(item => 
-        item.access === 'available' && 
-        [...item.alias, ...item.alias.map( x=> 'the ' + x )].includes(name)
+    return Object.values(state).filter(item =>
+        item.access === 'available' &&
+        [...item.alias, ...item.alias.map(x => 'the ' + x)].includes(name)
     );
 }

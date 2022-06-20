@@ -21,10 +21,10 @@ export async function gameLoop(io: Io) {
     io.writeln(``);
     io.writeln(`- Ouch, that hurts! What's this <i>darkness</i>? Where is everyone?`);
 
-    while(true) {
+    while (true) {
         let res = runCommand(await io.readln(), state);
         let msg = ''
-        if (typeof(res) == 'string') {
+        if (typeof (res) == 'string') {
             msg = res;
         } else {
             state = { ...state, ...res[1] };
@@ -37,8 +37,8 @@ export async function gameLoop(io: Io) {
 export type CommandResult = string | [string | string[], Partial<State>];
 
 function runCommand(command: string, state: State): CommandResult {
-    let verb = command.trim().split(' ')[0];
-    let obj = command.trim().split(' ').slice(1).join(' ').trim();
+    const parts = command.trim().toLowerCase().split(' ').filter(x => x !== 'the');
+    let [verb, obj] = [parts[0], parts.slice(1).join(' ')];
 
     if (verb === 'l') { verb = 'look'; }
     if (verb === 'h') { verb = 'help'; }
@@ -50,14 +50,14 @@ function runCommand(command: string, state: State): CommandResult {
 
     switch (verb) {
         case 'hello':
-            return hello(state, obj);   
+            return hello(state, obj);
         case konamiCode:
             return konami(state, obj);
         case 'iddqd':
             return iddqd(state, obj);
-        case 'lumos': 
+        case 'lumos':
             return lumos(state);
-        case 'inventory': 
+        case 'inventory':
             return inventory(state, obj);
         case 'help':
             return help(state, obj);
@@ -69,6 +69,7 @@ function runCommand(command: string, state: State): CommandResult {
             return use(state, obj);
         case 'move':
             return move(state, obj)
+        default:
+            return `I don't understand.`;
     }
-    return "I don't understand.";
 }
