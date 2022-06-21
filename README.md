@@ -5,7 +5,7 @@ With the hope of bringing back the feel of the classic genre for the 5 minutes o
 
 The plot starts with the promising `Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. 
 It's a bit corny, but the whole project is meant to be a little parody and made with ❤️.
-You will run into cultural references in every corner.
+You will run into pop cultural references in every corner.
 
 The game is written in TypeScript in a rather functional style, with immutable datastructures.
 The interaction follows the traditional verb + object pattern but the parser tolerates some variations.
