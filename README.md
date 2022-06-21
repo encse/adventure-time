@@ -2,7 +2,7 @@
 A 404 page which is a text adventure. For my home page https://csokavar.hu. The site has a few hidden items anyway and a text adventure
 felt like a nice addition. I aimed to bring back the feel of the classic gamestyle for the 5 minutes one might want to spend on it.
 
-The game starts with the mistic (or corny?) `- Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to figure out more about the situation. It may sound banal, but consider it as a little parody made with ❤️.
+The game starts with the mistic (or corny?) `- Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. It may sound banal, but consider it as a little parody made with ❤️.
 
 The game is written in TypeScript, the limited parser uses the classic verb + object style. The IO is handled by a terminal emulator called [xterm.js](https://xtermjs.org/). It's not really a webapp, but I used [Create React App](https://github.com/facebook/create-react-app) to avoid playing whack-a-mole with the bundling issues that always come up at the beginning of these projects.
 
