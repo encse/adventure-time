@@ -6,7 +6,8 @@ With the hope of bringing back the feel of the classic genre for the 5 minutes o
 The plot starts with the promising `Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. 
 It's a bit corny, but the whole project is meant to be a little parody and made with ❤️.
 
-The game is written in TypeScript. The interaction follows the traditional verb + object pattern. 
+The game is written in TypeScript in a rather functional style, with immutable datastructures.
+The interaction follows the traditional verb + object pattern. 
 IO is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses ansi escape sequences to spice up the terminal green setting.
 
 It's not really a webapp, but I used [Create React App](https://github.com/facebook/create-react-app) to avoid playing whack-a-mole with the bundling issues that always come up at the beginning of these projects.
