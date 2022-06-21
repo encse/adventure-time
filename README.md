@@ -1,5 +1,5 @@
 # Adventure time!
-A 404 page which is a text adventure for my home page [csokavar.hu](https://csokavar.hu). The site has a few hidden items and a text adventure
+A 404 page which is a text adventure for my home page [csokavar.hu](https://csokavar.hu). The site has a few hidden items to discover and a text adventure
 felt like a nice addition. I aimed to bring back the feel of the classic gamestyle for the 5 minutes one might want to spend on it.
 
 The game starts with the mistic (or corny?) `- Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. It may sound banal, but consider it as a little parody made with ❤️.
