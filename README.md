@@ -3,7 +3,7 @@ A custom 404 page - in fact a text adventure - for my home page [csokavar.hu](ht
 The site has a few hidden items to discover and a text adventure felt like a nice addition. 
 With the hope to bring back the feel of the classic genre for the 5 minutes one might want to spend on it.
 
-The game starts with the promising `- Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. 
+The plot starts with the promising `Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. 
 It's a bit corny, but consider it to be a little parody made with ❤️.
 
 The game is written in TypeScript. The interaction follows the traditional verb + object pattern. 
