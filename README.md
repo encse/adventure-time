@@ -7,7 +7,8 @@ The game starts with the mistic (or corny?) `- Ouch, that hurts! What's this dar
 It may sound banal, but consider it as a little parody made with ❤️.
 
 The game is written in TypeScript, and you interact with it in the traditional verb + object style. 
-Io is delegated to [xterm.js](https://xtermjs.org/) for authenticity. 
+IO is delegated to [xterm.js](https://xtermjs.org/) for authenticity (Ansi escape sequences ftw.)
+
 It's not really a webapp, but I used [Create React App](https://github.com/facebook/create-react-app) to avoid playing whack-a-mole with the bundling issues that always come up at the beginning of these projects.
 
 ## Getting Started
