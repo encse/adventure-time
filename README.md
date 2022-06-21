@@ -1,5 +1,5 @@
 # Adventure time!
-A custom 404 page - which is in fact a text adventure - for my home page [csokavar.hu](https://csokavar.hu). 
+A custom 404 page - in fact a text adventure - for my home page [csokavar.hu](https://csokavar.hu). 
 The site has a few hidden items to discover and a text adventure felt like a nice addition. 
 I aimed to bring back the feel of the classic genre for the 5 minutes one might want to spend on it.
 
