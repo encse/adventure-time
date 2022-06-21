@@ -4,7 +4,6 @@ import { roomColor } from "./room";
 import { CommandResult } from "../loop";
 import { DiskLocation } from "./disk";
 
-
 export type Stick = Item<{location: DiskLocation, used: boolean}>;
 
 export function isStick(item: Item): item is Stick {

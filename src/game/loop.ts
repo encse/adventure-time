@@ -22,22 +22,35 @@ export async function gameLoop(io: Io) {
     io.writeln(`- Ouch, that hurts! What's this <i>darkness</i>? Where is everyone?`);
 
     while (true) {
-        let res = runCommand(await io.readln(), state);
-        let msg = ''
-        if (typeof (res) == 'string') {
-            msg = res;
-        } else {
-            state = { ...state, ...res[1] };
-            msg = Array.isArray(res[0]) ? res[0].filter(x => x !== '').join(' ') : res[0];
+        let msg: string;
+        [msg, state] = processInput(await io.readln(), state);
+        
+        if (msg !== '') {
+            io.writeln(msg.trim());
         }
-        io.writeln(msg.trim());
     }
 }
 
 export type CommandResult = string | [string | string[], Partial<State>];
 
-function runCommand(command: string, state: State): CommandResult {
-    const parts = command.trim().toLowerCase().split(' ').filter(x => x !== 'the');
+export function processInput(input: string, state: State): [string, State] {
+    const res = execute(input, state);
+    let msg = ''
+    if (typeof (res) == 'string') {
+        msg = res;
+    } else {
+        state = { ...state, ...res[1] };
+        msg = Array.isArray(res[0]) ? res[0].filter(x => x !== '').join(' ') : res[0];
+    }
+    return [msg.trim(), state];
+}
+
+function execute(input: string, state: State): CommandResult {
+    if (input === konamiCode) {
+        return konami(state, '');
+    }
+
+    const parts = input.trim().toLowerCase().split(' ');
     let [verb, obj] = [parts[0].trim(), parts.slice(1).join(' ').trim()];
 
     if (verb === 'l') { verb = 'look'; }
@@ -49,10 +62,10 @@ function runCommand(command: string, state: State): CommandResult {
     if (verb === 'm') { verb = 'move'; }
 
     switch (verb) {
+        case '':
+            return '';
         case 'hello':
             return hello(state, obj);
-        case konamiCode:
-            return konami(state, obj);
         case 'iddqd':
             return iddqd(state, obj);
         case 'lumos':

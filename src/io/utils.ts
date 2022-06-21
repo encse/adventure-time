@@ -46,7 +46,6 @@ export function center(text: string, width: number): string {
 }
 
 export function highlight(text: string): string {
-    c.enabled = true;
     text = text.replace(/<i>([^<]*)<\/i>/g, c.italic('$1'));
     return text;
 }

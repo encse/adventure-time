@@ -1,5 +1,4 @@
 import c from 'ansi-colors';
-c.enabled = true;
 
 export type Color = 
     'black' | 

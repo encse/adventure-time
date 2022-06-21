@@ -38,11 +38,14 @@ export function move(state: State, obj: string): CommandResult {
         const parts = obj.split(' to ');
         let [what, where] = [parts[0].trim(), parts[1].trim()];
 
-        if (where === 'left') { where = 'left stick'; }
-        if (where === 'right' && !state.missingStick.used) { where = 'center stick'; }
-        if (where === 'right') { where = 'right stick'; }
-        if (where === 'center') { where = 'center stick'; }
-        if (where === 'middle') { where = 'center stick'; }
+        if (!where.startsWith('the '))
+            where = 'the ' + where;
+
+        if (where === 'the left') { where = 'the left stick'; }
+        if (where === 'the right' && !state.missingStick.used) { where = 'the center stick'; }
+        if (where === 'the right') { where = 'the right stick'; }
+        if (where === 'the center') { where = 'the center stick'; }
+        if (where === 'the middle') { where = 'the center stick'; }
 
         const objAs = findItemsByName(state, what);
         const objBs = findItemsByName(state, where);
