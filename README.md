@@ -4,7 +4,7 @@ The site has a few hidden items to discover and a text adventure felt like a nic
 With the hope to bring back the feel of the classic genre for the 5 minutes one might want to spend on it.
 
 The game starts with the mistic (or corny?) `- Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. 
-It may sound banal, but consider it as a little parody made with ❤️.
+It's a bit trite, but consider it as a little parody made with ❤️.
 
 The game is written in TypeScript, and you interact with it in the traditional verb + object style. 
 IO is delegated to [xterm.js](https://xtermjs.org/) for authenticity (Ansi escape sequences ftw.)
