@@ -16,7 +16,7 @@ It's not really a webapp, but I used [Create React App](https://github.com/faceb
 
 ### Hosted version
 
-You can play it on https://404.csokavar.hu
+You can play it at https://404.csokavar.hu
 
 ### `npm start`
 
