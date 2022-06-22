@@ -14,7 +14,10 @@ IO is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses an
 It's not really a webapp, but I used [Create React App](https://github.com/facebook/create-react-app) to avoid playing whack-a-mole with the bundling issues that always come up at the beginning of these projects.
 
 ## Getting Started
-You can run:
+
+### Hosted version
+
+You can play it on https://404.csokavar.hu
 
 ### `npm start`
 
