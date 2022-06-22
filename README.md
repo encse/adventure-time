@@ -7,7 +7,7 @@ The plot starts with the promising `Ouch, that hurts! What's this darkness? Wher
 It's a bit corny, but the whole project is meant to be a little parody and made with ❤️.
 You will run into pop cultural references in every corner.
 
-The game is written in TypeScript in a rather functional style, with immutable datastructures.
+The game is written in TypeScript in a rather functional style, with immutable data structures.
 The interaction follows the traditional verb + object pattern but the parser tolerates some variations.
 IO is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses ansi escape sequences to spice up the terminal green setting.
 
