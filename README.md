@@ -1,6 +1,6 @@
 # Adventure time!
 A custom 404 page - in fact a text adventure - for my home page [csokavar.hu](https://csokavar.hu). 
-The site has a few hidden items to discover and a text adventure felt like a nice addition. 
+The site has a few hidden things to discover and a text adventure felt like a nice addition. 
 With the hope of bringing back the feel of the classic genre for the 5 minutes one might want to spend on it.
 
 The plot starts with the promising `Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. 
