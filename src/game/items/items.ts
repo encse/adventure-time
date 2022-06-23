@@ -5,7 +5,7 @@ import { State } from '../state';
 
 export type Item<T={}> =  T & {
     readonly name: string; 
-    readonly access: 'available' | 'not found'; 
+    readonly accessible: boolean; 
     readonly alias: readonly string[];
     readonly examine: (state: State) => CommandResult; 
     readonly look: (state: State) => CommandResult; 
@@ -14,7 +14,6 @@ export type Item<T={}> =  T & {
 
 export type ItemProps = {
     name: string | string[], 
-    access? : 'available' | 'not found', 
     examine?: (state: State) => CommandResult, 
     look?:  (state: State) => CommandResult, 
     use?: (state: State) => CommandResult, 
@@ -38,7 +37,7 @@ export function makeItem<T>(props: ItemProps & T) : Item<T> {
     return {
         ...props,
         name: name,
-        access: props.access ?? 'available',
+        accessible: false,
         alias: typeof(props.name) == 'string' ? [name] : props.name,
         examine: examine,
         look: look,

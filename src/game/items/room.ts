@@ -30,9 +30,9 @@ export const room = makeItem({
                 "The floor feels cold, probably marble. ";
         }
 
-        if (state.missingStick.access === 'not found') {
+        if (!state.missingStick.accessible) {
             stStick = 'You have found a <i>stick</i> on the floor. ';
-            upd = {missingStick: {...state.missingStick, access: 'available'}}
+            upd = {missingStick: {...state.missingStick, accessible: true}}
         }
 
         const msg = stRoom + stWall + stStick;

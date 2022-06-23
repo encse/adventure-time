@@ -8,7 +8,6 @@ import { isStick, Stick } from "./sticks";
 
 export const installation = makeItem({
     name: ['weird installation', 'installation'],
-    access: 'not found',
     examine: (state: State): CommandResult => {
 
         const msg = state.missingStick.used ?
@@ -16,14 +15,14 @@ export const installation = makeItem({
             `The installation consists of a <i>small</i>, a <i>medium</i> and a <i>large disk</i> on two <i>sticks</i>. There is a <i>hole</i> for a third stick to the right.`;
 
         const upd: Partial<State> = {
-            hole: { ...state.hole, access: 'available' },
+            hole: { ...state.hole, accessible: true },
 
-            leftStick: { ...state.leftStick, access: 'available' },
-            centerStick: { ...state.centerStick, access: 'available' },
+            leftStick: { ...state.leftStick, accessible: true },
+            centerStick: { ...state.centerStick, accessible: true },
 
-            smallDisk: { ...state.smallDisk, access: 'available' },
-            mediumDisk: { ...state.mediumDisk, access: 'available' },
-            largeDisk: { ...state.largeDisk, access: 'available' },
+            smallDisk: { ...state.smallDisk, accessible: true },
+            mediumDisk: { ...state.mediumDisk, accessible: true },
+            largeDisk: { ...state.largeDisk, accessible: true },
         };
         return [msg + describeHanoi(state), upd];
     }

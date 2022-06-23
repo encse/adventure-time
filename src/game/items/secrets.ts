@@ -10,7 +10,6 @@ export const secrets: Secrets = makeItem({
     konamiFound: false, 
     iddqdFound: false, 
     name: ['secret'],
-    access: 'not found',
 });
 
 export function konami(state: State, obj: string): CommandResult {

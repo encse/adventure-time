@@ -6,12 +6,12 @@ export const pocket = makeItem({
     name: 'pocket', 
     examine: (state) => {
         let st = [`You have:`];
-        if (state.matches.access === 'available') {
+        if (state.matches.accessible) {
             st.push(`- a box of matches. `);
         } 
 
-        if (state.missingStick.access === 'available' && !state.missingStick.used) {
-            st.push(`- You have a stick. `);
+        if (state.missingStick.accessible && !state.missingStick.used) {
+            st.push(`-  a stick. `);
         }
 
         return st.join('\n');

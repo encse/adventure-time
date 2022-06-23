@@ -32,7 +32,7 @@ export const matches: Matches = makeItem({
                 `The fire goes out quickly and you stay alone in the darkness again.`;
         }
         const upd : Partial<State> = {
-            installation: {...state.installation, access: 'available'},
+            installation: {...state.installation, accessible: true},
             matches: {...state.matches, used: true},
         };
         return [msg, upd];

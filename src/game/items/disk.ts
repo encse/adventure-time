@@ -16,7 +16,6 @@ function makeDisk(shortName: string, color: Color, get: (state: State) => Disk):
     return makeItem({
         location: 'left stick',
         color: color,
-        access: 'not found',
         name: ['disk', 'disks', fullName],
         examine: (state) => {
             const self = get(state);
