@@ -38,8 +38,8 @@ export function processInput(input: string, state: State): [string, State] {
     if (typeof (res) == 'string') {
         msg = res;
     } else {
+        msg = res[0];
         state = { ...state, ...res[1] };
-        msg = Array.isArray(res[0]) ? res[0].filter(x => x !== '').join(' ') : res[0];
     }
     return [msg.trim(), state];
 }
