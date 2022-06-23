@@ -7,6 +7,9 @@ It's a bit corny, but the whole project is meant to be a little parody and made 
 You will run into pop cultural references in every corner.
 
 The game is written in TypeScript in a rather functional style, with immutable data structures.
+State and command goes in, new state and message goes out. 
+You get the idea.
+
 The interaction follows the traditional verb + object pattern but the parser tolerates some variations.
 I/O is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses ansi escape sequences to spice up the terminal-green setting.
 
