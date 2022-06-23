@@ -10,7 +10,7 @@ export function lineBreak(text: string, width: number): string {
         let nonEscapedChars = 0;
         for (let ich = 0; ich < line.length; ich++) {
             if (escape) {
-                if (line[ich] ==='m') {
+                if (line[ich] === 'm') {
                     escape = false;
                 }
             } else {
@@ -39,7 +39,7 @@ export function center(text: string, width: number): string {
     return text.replace(/<c>(.*)<\/c>/g, (_, part) => {
         const realLength = stringWidth(part);
         if (width > realLength)
-            return  ' '.repeat((width - realLength) / 2) + part;
+            return ' '.repeat((width - realLength) / 2) + part;
         else
             return part;
     });

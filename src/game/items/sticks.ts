@@ -1,8 +1,8 @@
-import { Item, makeItem } from "./items";
-import { State } from "../state";
-import { roomColor } from "./room";
-import { CommandResult } from "../loop";
-import { DiskLocation } from "./disk";
+import { Item, makeItem } from './items';
+import { State } from '../state';
+import { roomColor } from './room';
+import { CommandResult } from '../loop';
+import { DiskLocation } from './disk';
 
 export type Stick = Item<{location: DiskLocation, used: boolean}>;
 
@@ -73,6 +73,6 @@ export function lumos(state: State) : CommandResult {
             `Nothing happens. Magic left this place long time ago.`
         )
     } else {
-        return "You don't have a magic wand."
+        return `You don't have a magic wand.`;
     }
 }

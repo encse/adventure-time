@@ -24,15 +24,13 @@ export async function gameLoop(io: Io) {
     while (true) {
         let msg: string;
         [msg, state] = processInput(await io.readln(), state);
-        
+
         if (msg !== '') {
             io.writeln(msg.trim());
             io.writeln('');
         }
     }
 }
-
-export type CommandResult = string | [string | string[], Partial<State>];
 
 export function processInput(input: string, state: State): [string, State] {
     const res = execute(input, state);
@@ -45,6 +43,8 @@ export function processInput(input: string, state: State): [string, State] {
     }
     return [msg.trim(), state];
 }
+
+export type CommandResult = string | [string, Partial<State>];
 
 function execute(input: string, state: State): CommandResult {
     if (input === konamiCode) {

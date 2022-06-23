@@ -15,7 +15,7 @@ export class XtermIo implements Io {
     windowWidth: number;
     term: Terminal;
 
-    constructor(element: HTMLElement){
+    constructor(element: HTMLElement) {
         this.term = new Terminal({
             theme: {
                 foreground: '#00ff33'
@@ -26,7 +26,7 @@ export class XtermIo implements Io {
         this.term.loadAddon(fitAddon);
         this.term.loadAddon(new WebLinksAddon());
         fitAddon.fit();
-        this.windowWidth =  Math.min(80, this.term.cols - 1);
+        this.windowWidth = Math.min(80, this.term.cols - 1);
     }
 
     readln(): Promise<string> {
@@ -36,32 +36,32 @@ export class XtermIo implements Io {
             this.term.write('> ');
             const o = this.term.onData(e => {
                 buffer += e;
-                if (buffer.endsWith(konamiCode)){
+                if (buffer.endsWith(konamiCode)) {
                     result = konamiCode;
                     e = '\r';
                 }
                 switch (e) {
-                  case '\r': // Enter
-                    this.term.writeln('\r');
-                    resolve(result);
-                    o.dispose();
-                    break;
-                  case '\u007F': // Backspace (DEL)
-                    if (result.length > 0) {
-                        this.term.write('\b \b');
-                        result = result.substring(0, result.length - 1);
-                    }
-                    break;
-                  default: 
-                    if ((e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E)) || e >= '\u00a0') {
-                      result += e;
-                      this.term.write(e);
-                    }
+                    case '\r': // Enter
+                        this.term.writeln('\r');
+                        resolve(result);
+                        o.dispose();
+                        break;
+                    case '\u007F': // Backspace (DEL)
+                        if (result.length > 0) {
+                            this.term.write('\b \b');
+                            result = result.substring(0, result.length - 1);
+                        }
+                        break;
+                    default:
+                        if ((e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E)) || e >= '\u00a0') {
+                            result += e;
+                            this.term.write(e);
+                        }
                 }
-              });
+            });
         });
     }
-    
+
     write(text: string) {
         this.term.write(text);
     }
@@ -69,12 +69,13 @@ export class XtermIo implements Io {
     writeln(text: string) {
         text = lineBreak(
             center(
-                highlight(text), 
+                highlight(text),
                 this.windowWidth
-            ), 
+            ),
             this.windowWidth
         );
-        for (const line of text.split('\n')){
+
+        for (const line of text.split('\n')) {
             this.term.writeln(line);
         }
     }

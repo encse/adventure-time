@@ -3,7 +3,7 @@ import { Item, makeItem } from "./items";
 import { State } from "../state";
 
 export type DiskLocation = 'left stick' | 'center stick' | 'right stick';
-export type Disk = Item<{location: DiskLocation, color: Color}>;
+export type Disk = Item<{ location: DiskLocation, color: Color }>;
 export const smallDisk = makeDisk('small', 'red', state => state.smallDisk);
 export const mediumDisk = makeDisk('medium', 'green', state => state.mediumDisk);
 export const largeDisk = makeDisk('large', 'blue', state => state.largeDisk);
@@ -12,7 +12,7 @@ export function isDisk(item: Item): item is Disk {
     return item != null && item.name === 'disk';
 }
 function makeDisk(shortName: string, color: Color, get: (state: State) => Disk): Disk {
-    const fullName = shortName +' disk'
+    const fullName = shortName + ' disk'
     return makeItem({
         location: 'left stick',
         color: color,
@@ -28,4 +28,3 @@ function makeDisk(shortName: string, color: Color, get: (state: State) => Disk):
         use: () => `You can try to move it to an other stick.`
     });
 }
-

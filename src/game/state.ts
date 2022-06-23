@@ -31,11 +31,11 @@ export type State = {
 };
 
 export const initialState: State = {
-    darkness: {...darkness, accessible: true},
-    room: {...room, accessible: true},
-    pocket: {...pocket, accessible: true},
-    matches: {...matches, accessible: true},
-    wall: {...wall, accessible: true},
+    darkness: { ...darkness, accessible: true },
+    room: { ...room, accessible: true },
+    pocket: { ...pocket, accessible: true },
+    matches: { ...matches, accessible: true },
+    wall: { ...wall, accessible: true },
     installation,
     hole,
     leftStick,
@@ -49,6 +49,6 @@ export const initialState: State = {
 
 export function findItemsByName(state: State, name: string): Item[] {
     return Object.values(state).filter(item =>
-        item.accessible && [...item.alias, ...item.alias.map(x=> 'the '+x)].includes(name) 
+        item.accessible && [...item.alias, ...item.alias.map(x => 'the ' + x)].includes(name)
     );
 }

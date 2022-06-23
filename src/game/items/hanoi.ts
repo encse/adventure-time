@@ -79,7 +79,8 @@ export function move(state: State, obj: string): CommandResult {
                 '';
 
             state = { ...state, ...upd };
-            return [[stMove, stAction, describeHanoi(state)], state];
+            const msg = [stMove, stAction, describeHanoi(state)].filter(x => x !== '').join(' ')
+            return [msg, state];
         }
     }
 }
