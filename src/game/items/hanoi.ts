@@ -136,9 +136,9 @@ function describeHanoi(state: State): string {
     }
 
     if (!state.missingStick.used) {
-        res += colorize(` =====+==========+==========-=====\n`, 'grey');
+        res += colorize(` =====+==========+==========-=====`, 'grey');
     } else {
-        res += colorize(` =====+==========+==========+=====\n`, 'grey');
+        res += colorize(` =====+==========+==========+=====`, 'grey');
     }
     return res;
 }

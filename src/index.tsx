@@ -2,14 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { gameLoop } from './game/loop';
-import { TermIo } from './io/io';
+import { XtermIo } from './io/io';
 import c from 'ansi-colors';
 
 function App() {
     c.enabled = true;
     const onRefChange = React.useCallback((node:HTMLElement | null) => {
         if (node != null) { 
-            gameLoop(new TermIo(node));
+            gameLoop(new XtermIo(node));
         }
       }, []); 
     

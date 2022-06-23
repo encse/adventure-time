@@ -11,7 +11,7 @@ export interface Io {
     writeln(text: string): void;
 }
 
-export class TermIo implements Io {
+export class XtermIo implements Io {
     windowWidth: number;
     term: Terminal;
 
@@ -27,7 +27,6 @@ export class TermIo implements Io {
         this.term.loadAddon(new WebLinksAddon());
         fitAddon.fit();
         this.windowWidth =  Math.min(80, this.term.cols - 1);
-    
     }
 
     readln(): Promise<string> {
@@ -44,10 +43,8 @@ export class TermIo implements Io {
                 switch (e) {
                   case '\r': // Enter
                     this.term.writeln('\r');
-
                     resolve(result);
                     o.dispose();
-                   
                     break;
                   case '\u007F': // Backspace (DEL)
                     if (result.length > 0) {
@@ -55,7 +52,7 @@ export class TermIo implements Io {
                         result = result.substring(0, result.length - 1);
                     }
                     break;
-                  default: // Print all other characters for demo
+                  default: 
                     if ((e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7E)) || e >= '\u00a0') {
                       result += e;
                       this.term.write(e);

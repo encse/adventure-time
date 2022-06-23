@@ -8,8 +8,11 @@ export const wall = makeItem({
     examine: (state) => {
         if (roomColor(state) === 'black') {
             return `It's a wall, made of concrete.`;
+        } else if (roomColor(state) === 'white') {
+            return `There is a message on the wall. It says: `+ describeWall(state);;
+        } else {
+            return `The wall is painted to black, but you see some colorful letters:` + describeWall(state);
         }
-        return `Somebody painted a message on the wall. It says:` + describeWall(state);
     }
 });
 
@@ -29,7 +32,6 @@ function describeWall(state: State): string {
         ``,
         `Or who knows? We have a cool game here. Enjoy!`,
         `If you manage to decipher this message, tag @encse on twitter.`,
-        ``,
     ];
 
     let seed = 1;

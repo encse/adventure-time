@@ -27,6 +27,7 @@ export async function gameLoop(io: Io) {
         
         if (msg !== '') {
             io.writeln(msg.trim());
+            io.writeln('');
         }
     }
 }
