@@ -34,7 +34,7 @@ export class TermIo implements Io {
         return new Promise<string>((resolve) => {
             let result = '';
             let buffer = '';
-            this.term.write('\n> ');
+            this.term.write('> ');
             const o = this.term.onData(e => {
                 buffer += e;
                 if (buffer.endsWith(konamiCode)){
