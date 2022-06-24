@@ -1,6 +1,6 @@
 # Adventure time!
 A custom 404 page - in fact a text adventure - for my home page [csokavar.hu](https://csokavar.hu). 
-The site has a few hidden things to discover and a text adventure felt like a nice addition, with the hope of bringing back the feel of the classic genre for the 5 minutes one might want to spend on it.
+The site has a few hidden features to discover and a text adventure felt like a nice addition, with the hope of bringing back the feel of the classic genre for the 5 minutes one might want to spend on it.
 
 The plot starts with the promising `Ouch, that hurts! What's this darkness? Where is everyone?` question and the player is expected to investigate the situation. 
 It's a bit corny, but the whole project is meant to be a little parody and made with ❤️.
@@ -11,7 +11,7 @@ State and command goes in, new state and message goes out.
 You get the idea.
 
 The interaction follows the traditional verb + object pattern but the parser tolerates some variations.
-I/O is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses ansi escape sequences to spice up the terminal-green setting.
+I/O is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses ANSI escape sequences to spice up the terminal-green setting.
 
 It's not really a webapp, but I used [Create React App](https://github.com/facebook/create-react-app) to avoid playing whack-a-mole with the bundling issues that always come up at the beginning of these projects.
 
