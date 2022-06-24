@@ -27,3 +27,15 @@ export function iddqd(state: State, obj: string): CommandResult {
         return `Cheater!`;
     }
 }
+
+export function xyzzy(state: State, obj: string): CommandResult {
+    const responses = [
+        `A hollow voice says 'fool'.`,
+        `Plugh!`,
+        `Plover!`,
+        `We are getting desperate, aren't we!`,
+        `Nothing happens.`,
+        `That's colossal.`,
+    ]
+    return responses[Math.floor(Math.random() * responses.length)];
+}

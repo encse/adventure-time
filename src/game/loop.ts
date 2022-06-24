@@ -6,7 +6,7 @@ import { look } from './commands/look';
 import { use } from './commands/use';
 import { move } from './items/hanoi';
 import { inventory } from './items/pocket';
-import { konamiCode, konami, iddqd } from './items/secrets';
+import { konamiCode, konami, iddqd, xyzzy } from './items/secrets';
 import { lumos } from './items/sticks';
 import { initialState, State } from './state';
 
@@ -58,7 +58,7 @@ function execute(input: string, state: State): CommandResult {
     if (verb === 'h') { verb = 'help'; }
     if (verb === 'i') { verb = 'inventory'; }
     if (verb === 'inv') { verb = 'inventory'; }
-    if (verb === 'e') { verb = 'examine'; }
+    if (verb === 'x') { verb = 'examine'; }
     if (verb === 'u') { verb = 'use'; }
     if (verb === 'm') { verb = 'move'; }
 
@@ -69,6 +69,8 @@ function execute(input: string, state: State): CommandResult {
             return hello(state, obj);
         case 'iddqd':
             return iddqd(state, obj);
+        case 'xyzzy':
+            return xyzzy(state, obj);
         case 'lumos':
             return lumos(state);
         case 'inventory':
