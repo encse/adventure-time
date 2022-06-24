@@ -15,7 +15,7 @@ export async function gameLoop(io: Io) {
 
     io.writeln(``);
     io.writeln(`<c>Adventure time!</c>`);
-    io.writeln(`<c>https://github.com/encse/text-adventure</c>`);
+    io.writeln(`<c>https://github.com/encse/adventure-time</c>`);
     io.writeln(``);
     io.writeln(``);
     io.writeln(``);
