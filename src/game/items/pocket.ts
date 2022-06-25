@@ -1,12 +1,12 @@
-import { CommandResult } from "../loop";
-import { makeItem } from "./items";
-import { getFullName, State } from "../state";
-import { a } from "../../io/utils";
+import {CommandResult} from '../loop';
+import {makeItem} from './items';
+import {getFullName, State} from '../state';
+import {a} from '../../io/utils';
 
 export const pocket = makeItem({
     name: 'pocket',
     examine: (state) => {
-        let st = [`You have:`];
+        const st = [`You have:`];
         if (state.matches.accessible) {
             st.push(`- ${a(getFullName(state, state.matches))}. `);
         }
@@ -19,7 +19,7 @@ export const pocket = makeItem({
     },
     use: (state) => {
         return state.pocket.examine(state);
-    }
+    },
 });
 
 export function inventory(state: State, obj: string): CommandResult {

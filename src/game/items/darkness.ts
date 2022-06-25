@@ -1,5 +1,5 @@
-import { makeItem } from "./items";
-import { roomColor } from "./room";
+import {makeItem} from './items';
+import {roomColor} from './room';
 
 export const darkness = makeItem({
     name: 'darkness',

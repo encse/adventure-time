@@ -21,17 +21,33 @@
     "xterm-addon-fit": "^0.5.0",
     "xterm-addon-web-links": "^0.5.1"
   },
+  "devDependencies": {
+    "eslint-config-google": "^0.14.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && rm -rf docs && mv build docs",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "npm run lint && react-scripts test --watchAll=false",
+    "eject": "react-scripts eject",
+    "lint": "npx eslint 'src/**' --ignore-pattern '*.css'"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
-      "react-app/jest"
-    ]
+      "react-app/jest",
+      "google"
+    ],
+    "rules": {
+      "require-jsdoc": "off",
+      "indent": [
+        "error",
+        4
+      ],
+      "max-len": [
+        "error",
+        120
+      ]
+    }
   },
   "browserslist": {
     "production": [

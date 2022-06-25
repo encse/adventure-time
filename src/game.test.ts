@@ -1,14 +1,14 @@
-import { processInput } from './game/loop';
-import { initialState, State } from './game/state';
 import c from 'ansi-colors';
-import { konamiCode } from './game/items/secrets';
+import {processInput} from './game/loop';
+import {initialState, State} from './game/state';
+import {konamiCode} from './game/items/secrets';
 
 test('Can play the game', () => {
     c.enabled = false;
 
     let state = initialState;
-    state = step(state, 'help', ["look", "examine", "use"]);
-    state = step(state, 'lumos', "You don't have a magic wand.");
+    state = step(state, 'help', ['look', 'examine', 'use']);
+    state = step(state, 'lumos', 'You don\'t have a magic wand.');
     state = step(state, 'examine box of matches', 'Kickstand bar');
     state = step(state, 'hello', 'Is it a good idea to start making noise in a dark room?');
     state = step(state, 'examine darkness', 'You wish you had a brass lantern.');
@@ -18,7 +18,7 @@ test('Can play the game', () => {
     state = step(state, 'look', 'box of matches');
     state = step(state, 'use matches', 'weird installation');
     state = step(state, 'use matches', 'ran out of matches');
-    state = step(state, 'examine installation', ["small", "medium", "large disk"]);
+    state = step(state, 'examine installation', ['small', 'medium', 'large disk']);
     state = step(state, 'move small disk to center', 'The disk starts glowing in red, illuminating the room.');
     state = step(state, 'look', 'wall');
     state = step(state, 'look wall', 'The wall is painted to black');
@@ -35,13 +35,13 @@ test('Can play the game', () => {
     step(state, 'look wall', 'manage to decipher this message');
 });
 
-function step(state: State, input: string, expected: string|string[]): State {
+function step(state: State, input: string, expected: string | string[]): State {
     let msg: string;
     [msg, state] = processInput(input, state);
-    if (!Array.isArray(expected)){
+    if (!Array.isArray(expected)) {
         expected = [expected];
     }
-    for (let phrase of expected){
+    for (const phrase of expected) {
         expect(msg).toContain(phrase);
     }
     return state;

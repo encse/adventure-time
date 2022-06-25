@@ -1,6 +1,6 @@
-import { CommandResult } from "../loop";
-import { findItemsByName, State } from "../state";
-import { dontUnderstand, disambiguate } from "./feedback";
+import {CommandResult} from '../loop';
+import {findItemsByName, State} from '../state';
+import {dontUnderstand, disambiguate} from './feedback';
 
 export function examine(state: State, obj: string): CommandResult {
     if (obj === '') {
@@ -8,7 +8,7 @@ export function examine(state: State, obj: string): CommandResult {
     } else {
         const items = findItemsByName(state, obj);
         if (items.length === 1) {
-            return items[0].examine(state)
+            return items[0].examine(state);
         } else if (items.length > 1) {
             return disambiguate(state, items);
         } else {

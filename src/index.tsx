@@ -1,18 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { gameLoop } from './game/loop';
-import { XtermIo } from './io/io';
+import {gameLoop} from './game/loop';
+import {XtermIo} from './io/io';
 import c from 'ansi-colors';
 
 function App() {
     c.enabled = true;
     const onRefChange = React.useCallback((node:HTMLElement | null) => {
-        if (node != null) { 
+        if (node != null) {
             gameLoop(new XtermIo(node));
         }
-      }, []); 
-    
+    }, []);
+
     return (
         <div className="App" ref={onRefChange}>
         </div>
@@ -20,11 +20,11 @@ function App() {
 }
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById('root') as HTMLElement,
 );
 
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>,
 );

@@ -1,7 +1,7 @@
-import { a } from '../../io/utils';
-import { CommandResult } from '../loop';
-import { roomColor } from "./room";
-import { State } from '../state';
+import {a} from '../../io/utils';
+import {CommandResult} from '../loop';
+import {roomColor} from './room';
+import {State} from '../state';
 
 export type Item<T = {}> = T & {
     readonly name: string;
@@ -20,8 +20,8 @@ export type ItemProps = {
 };
 
 export function makeItem<T>(props: ItemProps & T): Item<T> {
-    let name = typeof (props.name) == 'string' ? props.name : props.name[0];
-    let examine = props.examine ?? (() => `It's just ${a(name)}`);
+    const name = typeof (props.name) == 'string' ? props.name : props.name[0];
+    const examine = props.examine ?? (() => `It's just ${a(name)}`);
 
     let look = props.look;
     if (look == null) {

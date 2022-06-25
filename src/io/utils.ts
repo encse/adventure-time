@@ -2,9 +2,9 @@ import c from 'ansi-colors';
 import stringWidth from 'string-width';
 
 export function lineBreak(text: string, width: number): string {
-    let lines = text.split('\n');
+    const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
+        const line = lines[i];
         let ichSpace = 0;
         let escape = false;
         let nonEscapedChars = 0;
@@ -24,7 +24,7 @@ export function lineBreak(text: string, width: number): string {
                     if (nonEscapedChars > width) {
                         if (ichSpace > 0) {
                             lines.splice(i + 1, 0, line.substring(ichSpace + 1));
-                            lines[i] = line.substring(0, ichSpace).trimRight();
+                            lines[i] = line.substring(0, ichSpace).trimEnd();
                         }
                         break;
                     }
@@ -38,10 +38,11 @@ export function lineBreak(text: string, width: number): string {
 export function center(text: string, width: number): string {
     return text.replace(/<c>(.*)<\/c>/g, (_, part) => {
         const realLength = stringWidth(part);
-        if (width > realLength)
+        if (width > realLength) {
             return ' '.repeat((width - realLength) / 2) + part;
-        else
+        } else {
             return part;
+        }
     });
 }
 

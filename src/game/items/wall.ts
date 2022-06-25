@@ -1,7 +1,7 @@
-import { colorize } from '../../io/colors';
-import { makeItem } from './items';
-import { State } from '../state';
-import { roomColor } from './room';
+import {colorize} from '../../io/colors';
+import {makeItem} from './items';
+import {State} from '../state';
+import {roomColor} from './room';
 
 export const wall = makeItem({
     name: 'wall',
@@ -9,15 +9,14 @@ export const wall = makeItem({
         if (roomColor(state) === 'black') {
             return `It's a wall, made of concrete.`;
         } else if (roomColor(state) === 'white') {
-            return `There is a message on the wall. It says: ` + describeWall(state);;
+            return `There is a message on the wall. It says: ` + describeWall(state); ;
         } else {
             return `The wall is painted to black, but you see some colorful letters:` + describeWall(state);
         }
-    }
+    },
 });
 
 function describeWall(state: State): string {
-
     const lines = [
         ``,
         ``,
@@ -39,15 +38,15 @@ function describeWall(state: State): string {
         let x = Math.sin(seed++) * 10000;
         x = x - Math.floor(x);
         return Math.floor(x * 3);
-    }
+    };
 
     let res = '';
-    for (let line of lines) {
+    for (const line of lines) {
         res += '<c>';
-        for (let ch of line) {
+        for (const ch of line) {
             const disk = [state.smallDisk, state.mediumDisk, state.largeDisk][random()];
             if (disk.location === 'center stick') {
-                res += colorize(ch, disk.color)
+                res += colorize(ch, disk.color);
             } else {
                 res += ' ';
             }

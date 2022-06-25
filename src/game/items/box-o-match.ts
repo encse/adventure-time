@@ -1,7 +1,7 @@
-import { Item, makeItem } from "./items";
-import { State } from "../state";
-import { a } from "../../io/utils";
-import { roomColor } from "./room";
+import {Item, makeItem} from './items';
+import {State} from '../state';
+import {a} from '../../io/utils';
+import {roomColor} from './room';
 
 export type Matches = Item<{ used: boolean }>;
 
@@ -19,7 +19,7 @@ export const matches: Matches = makeItem({
     },
     use: (state: State) => {
         if (state.matches.used) {
-            return `You have ran out of matches.`
+            return `You have ran out of matches.`;
         }
 
         let msg = '';
@@ -32,9 +32,9 @@ export const matches: Matches = makeItem({
                 `The fire goes out quickly and you stay alone in the darkness again.`;
         }
         const upd: Partial<State> = {
-            installation: { ...state.installation, accessible: true },
-            matches: { ...state.matches, used: true },
+            installation: {...state.installation, accessible: true},
+            matches: {...state.matches, used: true},
         };
         return [msg, upd];
-    }
+    },
 });

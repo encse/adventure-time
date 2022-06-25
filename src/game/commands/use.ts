@@ -1,6 +1,6 @@
-import { CommandResult } from "../loop";
-import { findItemsByName, State } from "../state";
-import { dontUnderstand, disambiguate } from "./feedback";
+import {CommandResult} from '../loop';
+import {findItemsByName, State} from '../state';
+import {dontUnderstand, disambiguate} from './feedback';
 
 export function use(state: State, obj: string): CommandResult {
     if (obj === '') {

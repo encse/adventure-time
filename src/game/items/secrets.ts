@@ -1,6 +1,6 @@
-import { CommandResult } from "../loop";
-import { Item, makeItem } from "./items";
-import { State } from "../state";
+import {CommandResult} from '../loop';
+import {Item, makeItem} from './items';
+import {State} from '../state';
 
 export type Secrets = Item<{ konamiFound: boolean, iddqdFound: boolean }>;
 
@@ -14,7 +14,7 @@ export const secrets: Secrets = makeItem({
 
 export function konami(state: State, obj: string): CommandResult {
     if (!state.secrets.konamiFound) {
-        return [`You have found a secret!`, { secrets: { ...state.secrets, konamiFound: true } }];
+        return [`You have found a secret!`, {secrets: {...state.secrets, konamiFound: true}}];
     } else {
         return `Cheater!`;
     }
@@ -22,7 +22,7 @@ export function konami(state: State, obj: string): CommandResult {
 
 export function iddqd(state: State, obj: string): CommandResult {
     if (!state.secrets.iddqdFound) {
-        return [`You have found a secret!`, { secrets: { ...state.secrets, iddqdFound: true } }];
+        return [`You have found a secret!`, {secrets: {...state.secrets, iddqdFound: true}}];
     } else {
         return `Cheater!`;
     }
@@ -36,6 +36,6 @@ export function xyzzy(state: State, obj: string): CommandResult {
         `We are getting desperate, aren't we!`,
         `Nothing happens.`,
         `That's colossal.`,
-    ]
+    ];
     return responses[Math.floor(Math.random() * responses.length)];
 }
