@@ -71,7 +71,7 @@ export function lumos(state: State) : CommandResult {
     } else if (state.missingStick.accessible && !state.missingStick.used) {
         return (
             `You start swinging the stick drawing magic runes in the air.\n`+
-            `- Lumos! - You shout in the darkness.\n` +
+            `- Lumos! - You shout into the darkness.\n` +
             `Nothing happens. Magic left this place long time ago.`
         );
     } else {
