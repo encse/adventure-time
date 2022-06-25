@@ -22,7 +22,8 @@ function makeDisk(shortName: string, color: Color, get: (state: State) => Disk):
             if (self.location === 'center stick') {
                 return `It's made of glass and glowing in ${self.color}, illuminating the room.`;
             } else {
-                return `It's made of glass.`;
+                return `It's a bit cold, feels like glass. It's about the size of a plate, but thick ` +
+                `like a well stuffed donut. The edges are smooth, it must be of high quality.`;
             }
         },
         use: () => `You can try to move it to an other stick.`,

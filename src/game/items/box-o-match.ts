@@ -9,11 +9,12 @@ export const matches: Matches = makeItem({
     used: false,
     name: ['matches', 'match', 'box of matches'],
     examine: (state) => {
-        let msg = `The small box brings back good memories. The Kickstand bar! Those were the days! `;
+        let msg = `The small box brings back good memories. The Kick Stand bar! Those were the days... `+
+            `You were rocking the roads there and back with Ben and the Polecats with full throttle! `;
         if (state.matches.used) {
-            msg += `Unfortunately the box is empty, it has only nostalgic value now. `;
+            msg += `Unfortunately the box is empty, it has only sentimental value now. `;
         } else {
-            msg += `And it even has a last match, ready for use. `;
+            msg += `And it even has a last match ready for use. `;
         }
         return msg;
     },

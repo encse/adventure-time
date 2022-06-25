@@ -105,15 +105,15 @@ function describeHanoi(state: State): string {
     const empty = colorize('    |    ', 'grey');
 
     const nonLitDisks = new Map<Disk, string>([
-        [state.smallDisk, colorize('  [...]  ', 'grey')],
-        [state.mediumDisk, colorize(' [.....] ', 'grey')],
-        [state.largeDisk, colorize('[.......]', 'grey')],
+        [state.smallDisk, colorize('  (...)  ', 'grey')],
+        [state.mediumDisk, colorize(' (.....) ', 'grey')],
+        [state.largeDisk, colorize('(.......)', 'grey')],
     ]);
 
     const litDisks = new Map<Disk, string>([
-        [state.smallDisk, colorize('  [***]  ', state.smallDisk.color)],
-        [state.mediumDisk, colorize(' [*****] ', state.mediumDisk.color)],
-        [state.largeDisk, colorize('[*******]', state.largeDisk.color)],
+        [state.smallDisk, colorize('  (***)  ', state.smallDisk.color)],
+        [state.mediumDisk, colorize(' (*****) ', state.mediumDisk.color)],
+        [state.largeDisk, colorize('(*******)', state.largeDisk.color)],
     ]);
 
     const rowByStick = {
