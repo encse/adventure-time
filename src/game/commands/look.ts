@@ -10,7 +10,7 @@ export function look(state: State, obj: string): CommandResult {
         if (items.length === 1) {
             return items[0].look(state)
         } else if (items.length > 1) {
-            return disambiguate(items);
+            return disambiguate(state, items);
         } else {
             return dontUnderstand(state, obj);
         }

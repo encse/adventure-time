@@ -1,6 +1,6 @@
 import { colorize } from "../../io/colors";
 import { makeItem, Item } from "./items";
-import { State, findItemsByName } from "../state";
+import { State, findItemsByName, getFullName } from "../state";
 import { disambiguate } from "../commands/feedback";
 import { Disk, isDisk } from "./disk";
 import { CommandResult } from "../loop";
@@ -54,9 +54,9 @@ export function move(state: State, obj: string): CommandResult {
         if (!isDisk(disk) || !isStick(toStick)) {
             return `Try "move <some> disk to <position>".`
         } else if (objAs.length > 1) {
-            return disambiguate(objAs);
+            return disambiguate(state, objAs);
         } else if (objBs.length > 1) {
-            return disambiguate(objBs);
+            return disambiguate(state, objBs);
         } else if (toStick.location === disk.location) {
             return `It's already there.`;
         } else if (!isTopDisk(disk, state)) {
@@ -72,7 +72,7 @@ export function move(state: State, obj: string): CommandResult {
                 disk === state.mediumDisk ? { mediumDisk: { ...state.mediumDisk, location: toStick.location } } :
                 { largeDisk: { ...state.largeDisk, location: toStick.location } };
 
-            const stMove = `You carefully lift the disk and place it on the ${toStick.alias[toStick.alias.length - 1]}.`;
+            const stMove = `You carefully lift the disk and place it on the ${getFullName(state, toStick)}.`;
             const stAction =
                 from === 'center stick' ? `As soon as you lift the disk, it stops glowing.` :
                 toStick === state.centerStick ? `The disk starts glowing in ${disk.color}, illuminating the room.` :

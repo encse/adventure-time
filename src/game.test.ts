@@ -7,7 +7,7 @@ test('Can play the game', () => {
     c.enabled = false;
 
     let state = initialState;
-    state = step(state, 'help', ["Look", "examine", "use"]);
+    state = step(state, 'help', ["look", "examine", "use"]);
     state = step(state, 'lumos', "You don't have a magic wand.");
     state = step(state, 'examine box of matches', 'Kickstand bar');
     state = step(state, 'hello', 'Is it a good idea to start making noise in a dark room?');

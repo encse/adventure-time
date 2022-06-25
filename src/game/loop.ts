@@ -1,5 +1,6 @@
 import { Io } from '../io/io';
 import { examine } from './commands/examine';
+import { dontUnderstand } from './commands/feedback';
 import { hello } from './commands/hello';
 import { help } from './commands/help';
 import { look } from './commands/look';
@@ -16,7 +17,6 @@ export async function gameLoop(io: Io) {
     io.writeln(``);
     io.writeln(`<c>Adventure time!</c>`);
     io.writeln(`<c>https://github.com/encse/adventure-time</c>`);
-    io.writeln(``);
     io.writeln(``);
     io.writeln(``);
     io.writeln(`- Ouch, that hurts! What's this <i>darkness</i>? Where is everyone?`);
@@ -86,6 +86,7 @@ function execute(input: string, state: State): CommandResult {
         case 'move':
             return move(state, obj)
         default:
-            return `I don't understand.`;
+            return dontUnderstand(state, input);
+           
     }
 }

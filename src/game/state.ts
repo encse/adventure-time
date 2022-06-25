@@ -52,3 +52,12 @@ export function findItemsByName(state: State, name: string): Item[] {
         item.accessible && [...item.alias, ...item.alias.map(x => 'the ' + x)].includes(name)
     );
 }
+
+export function getFullName(state: State, item: Item): string {
+    for (let name of [...item.alias].reverse()) {
+        if (findItemsByName(state, name).length === 1) {
+            return name;
+        }
+    }
+    return item.name;
+}
