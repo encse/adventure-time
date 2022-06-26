@@ -1,7 +1,9 @@
 import {Item, makeItem} from './items';
-import {State} from '../state';
+import {findItemsByName, State} from '../state';
 import {a} from '../../io/utils';
 import {roomColor} from './room';
+import {disambiguate, dontUnderstand} from '../commands/feedback';
+import {CommandResult} from '../loop';
 
 export type Matches = Item<{ used: boolean }>;
 
@@ -39,3 +41,22 @@ export const matches: Matches = makeItem({
         return [msg, upd];
     },
 });
+
+export function light(state: State, obj: string): CommandResult {
+    if (obj === '') {
+        return `What do you want to light?`;
+    } else {
+        const items = findItemsByName(state, obj);
+        if (items.length === 1 && items[0] === state.matches) {
+            return items[0].use(state);
+        } else if (items.length === 1 && state.matches.used) {
+            return `You have ran out of matches.`;
+        } else if (items.length === 1) {
+            return `That's not the best idea.`;
+        } else if (items.length > 1) {
+            return disambiguate(state, items);
+        } else {
+            return dontUnderstand(state, obj);
+        }
+    }
+}

@@ -9,6 +9,7 @@ import {room} from './items/room';
 import {secrets, Secrets} from './items/secrets';
 import {centerStick, leftStick, missingStick, Stick} from './items/sticks';
 import {wall} from './items/wall';
+import {skipArticles} from './loop';
 
 export type State = {
     readonly matches: Matches;
@@ -49,7 +50,7 @@ export const initialState: State = {
 
 export function findItemsByName(state: State, name: string): Item[] {
     return Object.values(state).filter((item) =>
-        item.accessible && [...item.alias, ...item.alias.map((x) => 'the ' + x)].includes(name),
+        item.accessible && [...item.alias].includes(skipArticles(name)),
     );
 }
 

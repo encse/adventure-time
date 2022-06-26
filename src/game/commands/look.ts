@@ -3,7 +3,7 @@ import {findItemsByName, State} from '../state';
 import {disambiguate, dontUnderstand} from './feedback';
 
 export function look(state: State, obj: string): CommandResult {
-    if (obj === '') {
+    if (obj === '' || obj === 'around') {
         return state.room.look(state);
     } else {
         const items = findItemsByName(state, obj);

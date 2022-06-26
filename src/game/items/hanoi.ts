@@ -3,7 +3,7 @@ import {makeItem, Item} from './items';
 import {State, findItemsByName, getFullName} from '../state';
 import {disambiguate} from '../commands/feedback';
 import {Disk, isDisk} from './disk';
-import {CommandResult} from '../loop';
+import {CommandResult, skipArticles} from '../loop';
 import {isStick, Stick} from './sticks';
 
 export const installation = makeItem({
@@ -38,26 +38,22 @@ export function move(state: State, obj: string): CommandResult {
         return 'Try "move <some> disk to <position>".';
     } else {
         const parts = obj.split(' to ');
-        let [what, where] = [parts[0].trim(), parts[1].trim()];
+        let [what, where] = [parts[0].trim(), skipArticles(parts[1].trim())];
 
-        if (!where.startsWith('the ')) {
-            where = 'the ' + where;
+        if (where === 'left') {
+            where = 'left stick';
         }
-
-        if (where === 'the left') {
-            where = 'the left stick';
+        if (where === 'right' && !state.missingStick.used) {
+            where = 'center stick';
         }
-        if (where === 'the right' && !state.missingStick.used) {
-            where = 'the center stick';
+        if (where === 'right') {
+            where = 'right stick';
         }
-        if (where === 'the right') {
-            where = 'the right stick';
+        if (where === 'center') {
+            where = 'center stick';
         }
-        if (where === 'the center') {
-            where = 'the center stick';
-        }
-        if (where === 'the middle') {
-            where = 'the center stick';
+        if (where === 'middle') {
+            where = 'center stick';
         }
 
         const objAs = findItemsByName(state, what);

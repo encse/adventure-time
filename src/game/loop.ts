@@ -5,6 +5,7 @@ import {hello} from './commands/hello';
 import {help} from './commands/help';
 import {look} from './commands/look';
 import {use} from './commands/use';
+import {light} from './items/box-o-match';
 import {move} from './items/hanoi';
 import {inventory} from './items/pocket';
 import {konamiCode, konami, iddqd, xyzzy} from './items/secrets';
@@ -92,14 +93,32 @@ function execute(input: string, state: State): CommandResult {
     case 'help':
         return help(state, obj);
     case 'look':
-        return look(state, obj);
+        return look(state, skip('at', obj));
     case 'examine':
         return examine(state, obj);
     case 'use':
         return use(state, obj);
     case 'move':
         return move(state, obj);
+    case 'light':
+        return light(state, obj);
     default:
         return dontUnderstand(state, input);
     }
+}
+
+export function skip(prefix: string|string[], input: string) {
+    if (!Array.isArray(prefix)) {
+        prefix = [prefix];
+    }
+
+    const parts = input.trim().toLowerCase().split(' ');
+    if (prefix.includes(parts[0])) {
+        return parts.slice(1).join(' ').trim();
+    }
+    return input;
+}
+
+export function skipArticles(input: string) {
+    return skip(['a', 'an', 'the'], input);
 }
