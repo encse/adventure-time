@@ -11,7 +11,7 @@ State and command goes in, new state and message goes out.
 You get the idea.
 
 The interaction follows the traditional verb + object pattern but the parser tolerates some variations.
-I/O is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses ANSI escape sequences to spice up the terminal-green setting.
+I/O is delegated to [xterm.js](https://xtermjs.org/) for authenticity and uses ANSI escape sequences to break the monothony of the terminal-green setting.
 
 It's not really a webapp, but I used [Create React App](https://github.com/facebook/create-react-app) to avoid playing whack-a-mole with the bundling issues that always come up at the beginning of these projects.
 
