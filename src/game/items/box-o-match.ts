@@ -9,14 +9,14 @@ export type Matches = Item<{ used: boolean }>;
 
 export const matches: Matches = makeItem({
     used: false,
-    name: ['matches', 'match', 'box of matches'],
+    name: ['matches', 'match', 'last match', 'box of matches'],
     examine: (state) => {
         let msg = `The small box brings back good memories. The Kick Stand bar! Those were the days... `+
             `Rocking the roads full throttle with Ben and the Polecats!\n\n`;
         if (state.matches.used) {
             msg += `Unfortunately the box is empty, it has only sentimental value now. `;
         } else {
-            msg += `What's even better, the box has a last match ready for use. `;
+            msg += `What's even better, the box has a <i>last match</i> ready for use. `;
         }
         return msg;
     },
