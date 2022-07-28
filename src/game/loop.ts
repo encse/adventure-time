@@ -53,29 +53,7 @@ function execute(input: string, state: State): CommandResult {
     }
 
     const parts = input.trim().toLowerCase().split(' ');
-    let [verb, obj] = [parts[0].trim(), parts.slice(1).join(' ').trim()];
-
-    if (verb === 'l') {
-        verb = 'look';
-    }
-    if (verb === 'h') {
-        verb = 'help';
-    }
-    if (verb === 'i') {
-        verb = 'inventory';
-    }
-    if (verb === 'inv') {
-        verb = 'inventory';
-    }
-    if (verb === 'x') {
-        verb = 'examine';
-    }
-    if (verb === 'u') {
-        verb = 'use';
-    }
-    if (verb === 'm') {
-        verb = 'move';
-    }
+    const [verb, obj] = [parts[0].trim(), parts.slice(1).join(' ').trim()];
 
     switch (verb) {
     case '':
@@ -88,16 +66,25 @@ function execute(input: string, state: State): CommandResult {
         return xyzzy(state, obj);
     case 'lumos':
         return lumos(state);
+    case 'i':
+    case 'inv':
     case 'inventory':
         return inventory(state, obj);
+    case 'h':
     case 'help':
         return help(state, obj);
+    case 'l':
     case 'look':
         return look(state, skip('at', obj));
+    case 'x':
     case 'examine':
+    case 'inspect':
+    case 'investigate':
         return examine(state, obj);
+    case 'u':
     case 'use':
         return use(state, obj);
+    case 'm':
     case 'move':
         return move(state, obj);
     case 'light':
